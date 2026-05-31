@@ -1,0 +1,1629 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bahan Ajar IPAS – Interaksi Sosial</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --green-dark:#1a5c35;--green:#2d8a52;--green-mid:#3dab6a;--green-light:#6fcf97;
+  --green-pale:#d4f0e0;--green-bg:#edfaf3;
+  --sky:#5bc4e8;--sky-pale:#dff4fc;
+  --sun:#f9c846;--sun-pale:#fff8dc;
+  --earth:#c97b3a;--earth-pale:#fdf0e0;
+  --coral:#f26b6b;--coral-pale:#fde8e8;
+  --white:#ffffff;--offwhite:#f4fdf7;
+  --gray1:#e8f5ee;--gray2:#c8e6d4;--gray3:#6aaa82;--gray4:#1f4d30;--dark:#0f2d1a;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;font-family:'Poppins',sans-serif;background:var(--offwhite);}
+::-webkit-scrollbar{width:6px;}
+::-webkit-scrollbar-track{background:#c8e6d4;}
+::-webkit-scrollbar-thumb{background:var(--green-light);border-radius:10px;}
+textarea,input,select{font-family:'Poppins',sans-serif;}
+
+/* Animations */
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+@keyframes float{0%,100%{transform:translateY(0);}50%{transform:translateY(-8px);}}
+@keyframes sway{0%,100%{transform:rotate(-4deg);}50%{transform:rotate(4deg);}}
+@keyframes spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+@keyframes bounce{0%,100%{transform:scale(1);}50%{transform:scale(1.1);}}
+@keyframes shimmer{0%{background-position:200% center;}100%{background-position:-200% center;}}
+@keyframes leaf-fall{0%{transform:rotate(-10deg) translateY(0);opacity:1;}100%{transform:rotate(20deg) translateY(30px);opacity:0;}}
+
+.fade-up{animation:fadeUp .4s ease both;}
+.fade-in{animation:fadeIn .35s ease both;}
+.a1{animation-delay:.06s}.a2{animation-delay:.12s}.a3{animation-delay:.18s}.a4{animation-delay:.24s}.a5{animation-delay:.30s}.a6{animation-delay:.36s}
+.float{animation:float 3s ease-in-out infinite;}
+.sway{animation:sway 2.5s ease-in-out infinite;}
+.bounce-anim{animation:bounce 1.8s ease-in-out infinite;}
+.hover-lift{transition:transform .2s,box-shadow .2s;}
+.hover-lift:hover{transform:translateY(-3px);box-shadow:0 10px 28px rgba(45,138,82,.18)!important;}
+.btn-press{cursor:pointer;transition:transform .15s;}
+.btn-press:active{transform:scale(.94);}
+
+/* Leaf decorations */
+.leaf{position:absolute;pointer-events:none;opacity:.18;}
+.leaf svg{fill:var(--green-light);}
+
+/* Nature card style */
+.nature-card{
+  background:var(--white);
+  border-radius:20px;
+  border:2.5px solid #c8e6d4;
+  box-shadow:0 4px 20px rgba(45,138,82,.1);
+}
+.nature-card:hover{border-color:var(--green-light);}
+
+/* Scrollbar styling for content areas */
+#content-scroll::-webkit-scrollbar{width:5px;}
+#content-scroll::-webkit-scrollbar-thumb{background:var(--green-light);border-radius:10px;}
+input::placeholder,textarea::placeholder{color:rgba(255,255,255,.45);}
+input:focus,textarea:focus{box-shadow:0 0 0 3px rgba(249,200,70,.25);}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+// ── SVG ASSETS ──
+const SVG = {
+  leaf1:`<svg viewBox="0 0 60 80" xmlns="http://www.w3.org/2000/svg"><path d="M30 5 C10 20 5 50 30 75 C55 50 50 20 30 5Z" fill="currentColor"/><line x1="30" y1="10" x2="30" y2="70" stroke="white" stroke-width="1.5" stroke-opacity="0.4"/></svg>`,
+  leaf2:`<svg viewBox="0 0 80 60" xmlns="http://www.w3.org/2000/svg"><path d="M5 30 C20 10 50 5 75 30 C50 55 20 50 5 30Z" fill="currentColor"/><line x1="10" y1="30" x2="70" y2="30" stroke="white" stroke-width="1.5" stroke-opacity="0.4"/></svg>`,
+  flower:`<svg viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"><circle cx="30" cy="30" r="8" fill="#f9c846"/><circle cx="30" cy="14" r="7" fill="currentColor"/><circle cx="30" cy="46" r="7" fill="currentColor"/><circle cx="14" cy="30" r="7" fill="currentColor"/><circle cx="46" cy="30" r="7" fill="currentColor"/><circle cx="19" cy="19" r="6" fill="currentColor"/><circle cx="41" cy="19" r="6" fill="currentColor"/><circle cx="19" cy="41" r="6" fill="currentColor"/><circle cx="41" cy="41" r="6" fill="currentColor"/></svg>`,
+  sun:`<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg"><circle cx="40" cy="40" r="16" fill="#f9c846"/>${Array.from({length:12},(_,i)=>{const a=i*30*Math.PI/180,x1=40+22*Math.cos(a),y1=40+22*Math.sin(a),x2=40+32*Math.cos(a),y2=40+32*Math.sin(a);return`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#f9c846" stroke-width="3" stroke-linecap="round"/>`}).join('')}</svg>`,
+  tree:`<svg viewBox="0 0 80 100" xmlns="http://www.w3.org/2000/svg"><rect x="33" y="70" width="14" height="30" rx="3" fill="#c97b3a"/><polygon points="40,5 10,55 70,55" fill="#2d8a52"/><polygon points="40,20 14,62 66,62" fill="#3dab6a"/><polygon points="40,35 18,70 62,70" fill="#6fcf97"/></svg>`,
+  cloud:`<svg viewBox="0 0 100 60" xmlns="http://www.w3.org/2000/svg"><ellipse cx="50" cy="40" rx="40" ry="20" fill="currentColor"/><circle cx="30" cy="35" r="16" fill="currentColor"/><circle cx="55" cy="28" r="20" fill="currentColor"/><circle cx="74" cy="35" r="14" fill="currentColor"/></svg>`,
+  star:`<svg viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg"><polygon points="25,3 30,18 47,18 33,28 38,45 25,35 12,45 17,28 3,18 20,18" fill="currentColor"/></svg>`,
+  butterfly:`<svg viewBox="0 0 80 60" xmlns="http://www.w3.org/2000/svg"><path d="M40 30 C30 10 5 5 8 28 C11 45 35 40 40 30Z" fill="#f26b6b" opacity="0.8"/><path d="M40 30 C50 10 75 5 72 28 C69 45 45 40 40 30Z" fill="#f9c846" opacity="0.8"/><path d="M40 30 C32 42 12 50 18 40 C22 33 36 35 40 30Z" fill="#f26b6b" opacity="0.6"/><path d="M40 30 C48 42 68 50 62 40 C58 33 44 35 40 30Z" fill="#f9c846" opacity="0.6"/><line x1="40" y1="10" x2="40" y2="50" stroke="#1d3c2a" stroke-width="2"/></svg>`,
+  // NEW: caterpillar mascot
+  caterpillar:`<svg viewBox="0 0 120 60" xmlns="http://www.w3.org/2000/svg">
+    <circle cx="20" cy="38" r="14" fill="#6fcf97"/><circle cx="42" cy="34" r="14" fill="#3dab6a"/>
+    <circle cx="64" cy="32" r="14" fill="#6fcf97"/><circle cx="86" cy="30" r="14" fill="#3dab6a"/>
+    <circle cx="106" cy="28" r="12" fill="#2d8a52"/>
+    <circle cx="106" cy="28" r="12" fill="#2d8a52"/>
+    <circle cx="100" cy="22" r="9" fill="#1a5c35"/>
+    <circle cx="97" cy="20" r="3.5" fill="white"/><circle cx="103" cy="19" r="3.5" fill="white"/>
+    <circle cx="97.8" cy="20" r="2" fill="#0f2d1a"/><circle cx="103.8" cy="19" r="2" fill="#0f2d1a"/>
+    <path d="M99 25 Q101 27 103 25" stroke="white" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    <line x1="94" y1="13" x2="90" y2="7" stroke="#1a5c35" stroke-width="2" stroke-linecap="round"/>
+    <line x1="100" y1="11" x2="98" y2="5" stroke="#1a5c35" stroke-width="2" stroke-linecap="round"/>
+    <circle cx="90" cy="6" r="2.5" fill="#f9c846"/><circle cx="98" cy="4" r="2.5" fill="#f9c846"/>
+    <line x1="20" y1="24" x2="16" y2="14" stroke="#2d8a52" stroke-width="1.5"/><line x1="42" y1="20" x2="38" y2="10" stroke="#2d8a52" stroke-width="1.5"/>
+    <line x1="64" y1="18" x2="60" y2="8" stroke="#2d8a52" stroke-width="1.5"/><line x1="86" y1="16" x2="82" y2="6" stroke="#2d8a52" stroke-width="1.5"/>
+  </svg>`,
+  // NEW: frog
+  frog:`<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="40" cy="52" rx="26" ry="20" fill="#3dab6a"/>
+    <circle cx="22" cy="36" r="12" fill="#3dab6a"/><circle cx="58" cy="36" r="12" fill="#3dab6a"/>
+    <circle cx="22" cy="33" r="8" fill="#6fcf97"/><circle cx="58" cy="33" r="8" fill="#6fcf97"/>
+    <circle cx="22" cy="33" r="4" fill="white"/><circle cx="58" cy="33" r="4" fill="white"/>
+    <circle cx="22" cy="33" r="2.5" fill="#0f2d1a"/><circle cx="58" cy="33" r="2.5" fill="#0f2d1a"/>
+    <ellipse cx="40" cy="55" rx="18" ry="12" fill="#6fcf97"/>
+    <path d="M33 60 Q40 65 47 60" stroke="#2d8a52" stroke-width="2" fill="none" stroke-linecap="round"/>
+    <ellipse cx="15" cy="65" rx="10" ry="6" fill="#2d8a52" transform="rotate(-20 15 65)"/>
+    <ellipse cx="65" cy="65" rx="10" ry="6" fill="#2d8a52" transform="rotate(20 65 65)"/>
+  </svg>`,
+  // NEW: bee
+  bee:`<svg viewBox="0 0 70 70" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="35" cy="40" rx="16" ry="20" fill="#f9c846"/>
+    <rect x="22" y="32" width="26" height="5" rx="2" fill="#1a1a1a" opacity="0.7"/>
+    <rect x="22" y="42" width="26" height="5" rx="2" fill="#1a1a1a" opacity="0.7"/>
+    <circle cx="35" cy="24" r="12" fill="#f9c846"/>
+    <circle cx="31" cy="21" r="3.5" fill="white"/><circle cx="39" cy="21" r="3.5" fill="white"/>
+    <circle cx="31" cy="21" r="2" fill="#0f2d1a"/><circle cx="39" cy="21" r="2" fill="#0f2d1a"/>
+    <path d="M31 27 Q35 30 39 27" stroke="#c97a00" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+    <ellipse cx="18" cy="30" rx="10" ry="6" fill="rgba(200,240,220,0.8)" transform="rotate(-30 18 30)"/>
+    <ellipse cx="52" cy="30" rx="10" ry="6" fill="rgba(200,240,220,0.8)" transform="rotate(30 52 30)"/>
+    <line cx="28" cy="14" x1="30" y1="14" x2="27" y2="8" stroke="#c97a00" stroke-width="1.5" stroke-linecap="round"/>
+    <line cx="42" cy="14" x1="40" y1="14" x2="43" y2="8" stroke="#c97a00" stroke-width="1.5" stroke-linecap="round"/>
+    <circle cx="27" cy="7" r="2" fill="#c97a00"/><circle cx="43" cy="7" r="2" fill="#c97a00"/>
+  </svg>`,
+  // NEW: bird
+  bird:`<svg viewBox="0 0 80 60" xmlns="http://www.w3.org/2000/svg">
+    <ellipse cx="45" cy="35" rx="22" ry="16" fill="#5bc4e8"/>
+    <circle cx="64" cy="28" r="12" fill="#5bc4e8"/>
+    <circle cx="68" cy="26" r="4" fill="white"/><circle cx="69" cy="26" r="2.5" fill="#0f2d1a"/>
+    <path d="M70 31 L78 29 L70 33Z" fill="#f9c846"/>
+    <path d="M23 30 Q15 18 8 22 Q18 22 23 30Z" fill="#5bc4e8"/>
+    <path d="M23 30 Q15 42 8 38 Q18 38 23 30Z" fill="#7dd3fc"/>
+    <ellipse cx="50" cy="48" rx="8" ry="4" fill="#f9c846"/>
+    <path d="M42 35 Q35 25 28 28" stroke="#7dd3fc" stroke-width="3" fill="none" stroke-linecap="round"/>
+  </svg>`,
+  // NEW: rainbow
+  rainbow:`<svg viewBox="0 0 120 70" xmlns="http://www.w3.org/2000/svg">
+    <path d="M10 65 Q60 5 110 65" stroke="#f26b6b" stroke-width="6" fill="none" opacity="0.8"/>
+    <path d="M16 65 Q60 12 104 65" stroke="#f9c846" stroke-width="6" fill="none" opacity="0.8"/>
+    <path d="M22 65 Q60 20 98 65" stroke="#6fcf97" stroke-width="6" fill="none" opacity="0.8"/>
+    <path d="M28 65 Q60 28 92 65" stroke="#5bc4e8" stroke-width="6" fill="none" opacity="0.8"/>
+    <path d="M34 65 Q60 36 86 65" stroke="#8b5cf6" stroke-width="6" fill="none" opacity="0.8"/>
+  </svg>`,
+  // NEW: mushroom
+  mushroom:`<svg viewBox="0 0 60 70" xmlns="http://www.w3.org/2000/svg">
+    <rect x="22" y="42" width="16" height="22" rx="4" fill="#f5e0c0"/>
+    <ellipse cx="30" cy="38" rx="26" ry="20" fill="#f26b6b"/>
+    <circle cx="20" cy="30" r="5" fill="white" opacity="0.8"/>
+    <circle cx="38" cy="25" r="4" fill="white" opacity="0.8"/>
+    <circle cx="28" cy="38" r="3" fill="white" opacity="0.8"/>
+    <ellipse cx="30" cy="42" rx="20" ry="5" fill="#c93030" opacity="0.3"/>
+  </svg>`,
+};
+
+// ── MASCOT HELPER ──
+function mascot(type='caterpillar', size=80, style=''){
+  const svgs = {
+    caterpillar: SVG.caterpillar, frog: SVG.frog,
+    bee: SVG.bee, bird: SVG.bird
+  };
+  return `<div style="width:${size}px;height:${size*0.6}px;flex-shrink:0;${style}">${svgs[type]||SVG.caterpillar}</div>`;
+}
+
+// Mascot info map
+const MASCOT_INFO = {
+  caterpillar:{ name:'Upi si Ulat',    emoji:'🐛' },
+  frog:       { name:'Koko si Katak',  emoji:'🐸' },
+  bee:        { name:'Beby si Lebah',  emoji:'🐝' },
+  bird:       { name:'Biru si Burung', emoji:'🐦' },
+};
+// Mascot speech bubble helper
+function mascotSay(text, type='caterpillar', color='#2d8a52'){
+  const info = MASCOT_INFO[type]||MASCOT_INFO.caterpillar;
+  return `
+    <div style="display:flex;align-items:flex-end;gap:10px;margin-bottom:18px">
+      ${mascot(type, 70)}
+      <div style="flex:1;background:#fff;border-radius:16px 16px 16px 4px;padding:12px 16px;box-shadow:0 3px 14px rgba(45,138,82,.12);border:2.5px solid ${color}30;position:relative">
+        <div style="font-size:14px;color:${color};font-weight:800;margin-bottom:4px;font-family:'Poppins',sans-serif">${info.emoji} ${info.name}</div>
+        <div style="font-size:14.5px;color:#0f2d1a;font-weight:700;line-height:1.7">${text}</div>
+        <div style="position:absolute;bottom:-10px;left:12px;width:0;height:0;border-left:10px solid transparent;border-right:0px solid transparent;border-top:10px solid ${color}30"></div>
+      </div>
+    </div>`;
+}
+
+function leafDecor(color='var(--green-light)',size=60,style=''){
+  return `<span style="display:inline-block;width:${size}px;height:${size}px;color:${color};${style}">${SVG.leaf1}</span>`;
+}
+
+// ── STATE ──
+const state = {
+  page:'home', params:{},
+  lkpdAnswers:{}, readSet:new Set(),
+  accordionOpen:{'ch2p1':0,'ch3p1':0},
+  tabActive:{'ch5p2':0},
+  matchingSel:{}, matchingChecked:{}, evalChecked:{}
+};
+
+// ── DESIGN TOKENS (nature palette) ──
+const T = {
+  dark:'#0f2d1a', navy:'#1a5c35', blue:'#2d8a52', sky:'#0e90c0',
+  teal:'#1e9455', amber:'#c97a00', coral:'#c93030',
+  mint:'#c8f0d8', ice:'#cceeff', cream:'#fff3cc', sand:'#fde8c0',
+  white:'#ffffff', offWhite:'#f4fdf7',
+  gray1:'#e8f5ee', gray2:'#c8e6d4', gray3:'#6aaa82', gray4:'#1f4d30'
+};
+
+// Chapter & LKPD colors (vibrant nature tones)
+const CH_COLORS = ['#2d8a52','#5bc4e8','#e8913d','#8b5cf6','#f26b6b'];
+
+// ── DATA ──
+const CHAPTERS = [
+  {id:1,icon:'🤝',color:'#2d8a52',lightBg:'#d4f0e0',
+   title:'Pengertian Interaksi Sosial',subtitle:'Apa itu interaksi sosial dan syarat-syaratnya',
+   pages:[
+    {title:'Apa Itu Interaksi Sosial?',blocks:[
+      {type:'lead',text:'Interaksi sosial adalah hubungan timbal balik antara dua orang atau lebih yang saling mempengaruhi satu sama lain dalam kehidupan bermasyarakat.'},
+      {type:'callout',icon:'💡',label:'Tahukah Kamu?',color:'#dff4fc',borderColor:'#5bc4e8',
+       text:'Manusia adalah makhluk sosial yang tidak bisa hidup sendiri. Sejak bayi, kita sudah berinteraksi dengan orang tua, saudara, teman, dan tetangga di sekitar kita!'},
+      {type:'visual-cards',items:[
+        {icon:'👁️',title:'Kontak Sosial',desc:'Hubungan langsung (tatap muka) atau tidak langsung (telepon, pesan) antara dua pihak atau lebih.'},
+        {icon:'💬',title:'Komunikasi',desc:'Proses penyampaian pesan dari satu pihak ke pihak lain melalui bicara, tulisan, atau isyarat.'},
+      ]},
+    ]},
+    {title:'Bentuk-Bentuk Interaksi Sosial',blocks:[
+      {type:'lead',text:'Interaksi sosial terjadi dalam berbagai bentuk dalam kehidupan kita sehari-hari, dari yang sederhana hingga yang kompleks.'},
+      {type:'icon-list',items:[
+        {icon:'🤲',color:'#2d8a52',title:'Kerja Sama (Cooperation)',desc:'Beberapa orang bekerja bersama untuk mencapai tujuan yang sama. Contoh: kerja kelompok di sekolah, gotong royong membersihkan lingkungan.'},
+        {icon:'🕊️',color:'#5bc4e8',title:'Akomodasi (Accommodation)',desc:'Usaha untuk mengurangi perbedaan pendapat atau pertentangan agar bisa hidup damai. Contoh: musyawarah untuk mencapai mufakat.'},
+        {icon:'🌏',color:'#3dab6a',title:'Asimilasi (Assimilation)',desc:'Proses penyatuan dua kelompok atau budaya yang berbeda. Contoh: bergabung dalam kegiatan pramuka bersama teman dari daerah lain.'},
+      ]},
+      {type:'callout',icon:'✅',label:'Ingat!',color:'#d4f0e0',borderColor:'#2d8a52',
+       text:'Interaksi sosial yang positif membuat kita bisa saling bekerja sama, tolong-menolong, dan menciptakan lingkungan yang harmonis.'},
+    ]},
+  ]},
+  {id:2,icon:'🏫',color:'#5bc4e8',lightBg:'#dff4fc',
+   title:'Peran & Tanggung Jawab di Sekolah',subtitle:'Hak, kewajiban, dan peran warga sekolah',
+   pages:[
+    {title:'Warga Sekolah dan Perannya',blocks:[
+      {type:'lead',text:'Setiap orang di sekolah memiliki peran dan tanggung jawab masing-masing. Memahami peran kita penting agar sekolah berjalan dengan baik.'},
+      {type:'role-accordion',blockId:'ch2p1',items:[
+        {icon:'🎒',role:'Peserta Didik (Siswa)',color:'#2d8a52',items:['Belajar dengan tekun dan sungguh-sungguh','Menghormati guru dan sesama teman','Menjaga kebersihan dan ketertiban sekolah','Aktif dalam kegiatan belajar mengajar','Berpartisipasi dalam kegiatan ekstrakurikuler','Menjalin persahabatan yang baik dengan teman']},
+        {icon:'👩‍🏫',role:'Guru',color:'#5bc4e8',items:['Mengajar dan mendidik peserta didik','Membimbing dan memotivasi siswa','Memberikan contoh perilaku yang baik','Menjaga kedisiplinan di kelas','Menjalin komunikasi dengan orang tua siswa']},
+        {icon:'🏛️',role:'Kepala Sekolah',color:'#3dab6a',items:['Memimpin dan mengelola sekolah','Membuat kebijakan sekolah','Mengawasi kegiatan belajar mengajar','Menjalin hubungan baik dengan masyarakat','Bertanggung jawab atas kemajuan sekolah']},
+      ]},
+    ]},
+    {title:'Hak dan Kewajiban Peserta Didik',blocks:[
+      {type:'lead',text:'Sebagai peserta didik, kita memiliki hak yang boleh kita terima dan kewajiban yang harus kita penuhi di sekolah.'},
+      {type:'two-col-table',
+       colA:{label:'HAK PESERTA DIDIK',color:'#2d8a52',icon:'🎁',items:['Mendapatkan ilmu pengetahuan','Mendapat perlakuan adil dari guru','Menggunakan fasilitas sekolah','Mengikuti seluruh kegiatan sekolah','Menyampaikan pendapat']},
+       colB:{label:'KEWAJIBAN PESERTA DIDIK',color:'#e8913d',icon:'📋',items:['Datang ke sekolah tepat waktu','Menghormati guru dan sesama teman','Menjaga kebersihan sekolah','Mengikuti tata tertib sekolah','Mengerjakan tugas dengan jujur']},
+      },
+      {type:'callout',icon:'⚖️',label:'Hak dan Kewajiban Harus Seimbang!',color:'#fff8dc',borderColor:'#f9c846',
+       text:'Kita bisa mendapatkan hak dengan baik jika kita sudah melaksanakan kewajiban kita terlebih dahulu. Jangan hanya menuntut hak tanpa menjalankan kewajiban!'},
+    ]},
+  ]},
+  {id:3,icon:'🏘️',color:'#e8913d',lightBg:'#fdf0e0',
+   title:'Peran & Tanggung Jawab di Masyarakat',subtitle:'Gotong royong dan peran warga masyarakat',
+   pages:[
+    {title:'Peran Anggota Masyarakat',blocks:[
+      {type:'lead',text:'Masyarakat adalah sekumpulan orang yang hidup bersama dalam suatu wilayah. Setiap anggota memiliki peran penting untuk menjaga keharmonisan kehidupan bersama.'},
+      {type:'role-accordion',blockId:'ch3p1',items:[
+        {icon:'👦',role:'Anak-Anak',color:'#2d8a52',items:['Menghormati orang yang lebih tua','Belajar dengan rajin sebagai bekal masa depan','Ikut menjaga kebersihan lingkungan','Tidak membuat keributan yang mengganggu','Ikut berpartisipasi dalam kerja bakti']},
+        {icon:'👨‍👩‍👧',role:'Orang Tua',color:'#5bc4e8',items:['Mendidik dan membimbing anak-anak','Menjaga keamanan dan ketertiban lingkungan','Ikut serta dalam kegiatan gotong royong','Membayar pajak untuk kepentingan bersama']},
+        {icon:'🏅',role:'Ketua RT/RW',color:'#e8913d',items:['Mengurus administrasi warga','Memimpin musyawarah warga','Menjadi penghubung antara warga dan pemerintah','Menyelesaikan masalah yang terjadi di lingkungan']},
+      ]},
+    ]},
+    {title:'Gotong Royong dan Musyawarah',blocks:[
+      {type:'lead',text:'Dua kegiatan sosial terpenting di masyarakat Indonesia adalah gotong royong dan musyawarah. Keduanya mencerminkan nilai kebersamaan bangsa.'},
+      {type:'big-cards',items:[
+        {icon:'💪',color:'#2d8a52',title:'Gotong Royong',
+         points:['Bekerja sama mencapai tujuan bersama','Ciri khas dan kebanggaan bangsa Indonesia','Mencerminkan semangat kepedulian sosial'],
+         example:'Contoh: kerja bakti membersihkan selokan, membantu tetangga yang tertimpa musibah, membangun jembatan bersama.'},
+        {icon:'🗣️',color:'#8b5cf6',title:'Musyawarah',
+         points:['Pengambilan keputusan bersama-sama','Mengedepankan kepentingan bersama','Menghargai pendapat setiap orang'],
+         example:'Contoh: rapat RT untuk menetapkan aturan lingkungan, diskusi kelompok di kelas, rapat keluarga.'},
+      ]},
+    ]},
+  ]},
+  {id:4,icon:'📋',color:'#8b5cf6',lightBg:'#ede9fe',
+   title:'Peraturan di Sekolah & Masyarakat',subtitle:'Norma, aturan, dan tata tertib kehidupan',
+   pages:[
+    {title:'Peraturan di Sekolah',blocks:[
+      {type:'lead',text:'Peraturan adalah ketentuan yang harus dipatuhi semua anggota kelompok. Tanpa peraturan, kehidupan akan menjadi kacau dan tidak teratur.'},
+      {type:'rule-grid',items:[
+        {icon:'⏰',color:'#2d8a52',title:'Masuk Sekolah',items:['Datang sebelum bel (07.00)','Seragam lengkap dan rapi','Memberi salam kepada guru']},
+        {icon:'📚',color:'#5bc4e8',title:'Di Dalam Kelas',items:['Duduk dengan tertib','Angkat tangan sebelum bicara','Tidak ramai saat pelajaran']},
+        {icon:'🌿',color:'#3dab6a',title:'Kebersihan',items:['Buang sampah pada tempatnya','Ikut piket membersihkan kelas','Merawat tanaman sekolah']},
+        {icon:'🚫',color:'#f26b6b',title:'Larangan',items:['Dilarang berkelahi','Dilarang mencontek','Dilarang membully teman']},
+      ]},
+    ]},
+    {title:'Norma di Masyarakat',blocks:[
+      {type:'lead',text:'Di masyarakat, terdapat berbagai norma yang mengatur perilaku warga. Norma dibuat agar tercipta kehidupan yang tertib, aman, dan harmonis.'},
+      {type:'norm-cards',items:[
+        {icon:'🕌',color:'#2d8a52',title:'Norma Agama',source:'Bersumber dari ajaran agama',example:'Menjalankan ibadah, tidak mencuri, berbuat baik kepada sesama'},
+        {icon:'❤️',color:'#f26b6b',title:'Norma Kesusilaan',source:'Bersumber dari hati nurani',example:'Berperilaku sopan, tidak berbohong, saling menghormati'},
+        {icon:'🙏',color:'#e8913d',title:'Norma Kesopanan',source:'Kebiasaan dalam masyarakat',example:'Menyapa tetangga, berpakaian sopan, tidak meludah sembarangan'},
+        {icon:'⚖️',color:'#8b5cf6',title:'Norma Hukum',source:'Aturan tertulis pemerintah',example:'Undang-undang, peraturan daerah, tata tertib RT/RW'},
+      ]},
+    ]},
+  ]},
+  {id:5,icon:'✨',color:'#f26b6b',lightBg:'#fde8e8',
+   title:'Interaksi Sosial yang Positif',subtitle:'Cara membangun hubungan sosial yang baik',
+   pages:[
+    {title:'Ciri Interaksi Sosial Positif',blocks:[
+      {type:'lead',text:'Interaksi sosial yang positif adalah interaksi yang membawa manfaat, mempererat hubungan, dan menciptakan suasana yang harmonis di sekitar kita.'},
+      {type:'chip-cloud',items:['Saling menghormati','Berkomunikasi santun','Bekerja sama','Menghargai perbedaan','Membantu sesama','Menaati peraturan','Jujur dan terbuka','Peduli lingkungan','Empati','Toleransi']},
+      {type:'callout',icon:'🌟',label:'Kunci Utama!',color:'#fde8e8',borderColor:'#f26b6b',
+       text:'Interaksi sosial yang positif dimulai dari diri sendiri. Mulailah dengan senyum, sapa, dan sikap yang ramah kepada orang-orang di sekitarmu!'},
+    ]},
+    {title:'Cara Membangun Interaksi Positif',blocks:[
+      {type:'lead',text:'Ada banyak cara konkret yang bisa kita lakukan untuk membangun interaksi sosial yang positif, baik di sekolah maupun di masyarakat.'},
+      {type:'tab-steps',blockId:'ch5p2',tabs:[
+        {label:'Di Sekolah',icon:'🏫',color:'#2d8a52',steps:['Selalu menyapa guru dan teman dengan ramah dan salam','Mendengarkan dengan saksama saat orang lain berbicara','Tidak memotong pembicaraan orang lain','Menawarkan bantuan kepada teman yang kesulitan','Ikut berpartisipasi dalam kegiatan kelompok','Menyelesaikan konflik dengan cara damai dan musyawarah']},
+        {label:'Di Masyarakat',icon:'🏘️',color:'#e8913d',steps:['Ikut serta dalam kegiatan gotong royong lingkungan','Menghormati orang yang lebih tua dengan santun','Membantu tetangga yang sedang kesusahan','Tidak membuat keributan yang mengganggu orang lain','Ikut menjaga kebersihan lingkungan bersama','Berpartisipasi aktif dalam musyawarah warga']},
+      ]},
+      {type:'value-badges',title:'Lima Nilai Utama',items:[
+        {icon:'🌈',label:'Toleransi'},{icon:'💗',label:'Empati'},{icon:'✅',label:'Kejujuran'},{icon:'💼',label:'Tanggung Jawab'},{icon:'⏱️',label:'Disiplin'},
+      ]},
+    ]},
+  ]},
+];
+
+const LKPD_ACTIVITIES = [
+  {id:'L1',icon:'🤝',color:'#2d8a52',title:'Aku dan Interaksi Sosialku',desc:'Jawab pertanyaan berdasarkan pemahamanmu!',type:'essay',
+   questions:[
+    {id:'q1',num:1,text:'Jelaskan apa yang dimaksud dengan interaksi sosial dengan bahasamu sendiri!',rows:3},
+    {id:'q2',num:2,text:'Sebutkan dan jelaskan 2 syarat terjadinya interaksi sosial!',rows:4},
+    {id:'q3',num:3,text:'Ceritakan satu pengalaman interaksi sosialmu di sekolah! Dengan siapa dan apa yang dilakukan?',rows:4},
+    {id:'q4',num:4,text:'Menurut kamu, mengapa manusia perlu berinteraksi sosial dengan orang lain?',rows:3},
+   ]},
+  {id:'L2',icon:'🏫',color:'#5bc4e8',title:'Peran dan Tanggung Jawabku',desc:'Isi tabel peran dan daftar hak-kewajibanmu!',type:'table-fill',
+   tableRows:[
+    {role:'Siswa',keys:['siswa_peran','siswa_tanggung']},
+    {role:'Guru',keys:['guru_peran','guru_tanggung']},
+    {role:'Kepala Sekolah',keys:['kepsek_peran','kepsek_tanggung']},
+   ],hakKeys:['hak1','hak2','hak3','hak4'],kwjbKeys:['kw1','kw2','kw3','kw4']},
+  {id:'L3',icon:'📋',color:'#e8913d',title:'Aturan di Sekitarku',desc:'Temukan peraturan sekolahmu dan cocokkan norma!',type:'rules-matching',
+   ruleKeys:['r1','r2','r3','r4','r5'],
+   matching:{
+    pairs:[
+     {norma:'Norma Agama',correct:'C'},{norma:'Norma Kesusilaan',correct:'D'},
+     {norma:'Norma Kesopanan',correct:'A'},{norma:'Norma Hukum',correct:'B'},
+    ],
+    choices:[
+     {letter:'A',text:'Menyapa tetangga saat bertemu'},
+     {letter:'B',text:'Mematuhi rambu-rambu lalu lintas'},
+     {letter:'C',text:'Menjalankan ibadah sesuai agama'},
+     {letter:'D',text:'Tidak berbohong kepada siapapun'},
+    ]
+   }},
+  {id:'L4',icon:'💡',color:'#8b5cf6',title:'Interaksi Sosial Positif',desc:'Baca situasi dan berikan responsmu yang terbaik!',type:'scenario',
+   scenarios:[
+    {id:'s1',label:'Situasi 1',text:'Temanmu kesulitan memahami pelajaran matematika dan tampak sedih. Kamu sudah mengerti materi tersebut.',q:'Apa yang akan kamu lakukan dan mengapa?'},
+    {id:'s2',label:'Situasi 2',text:'Saat kerja bakti di RT, ada warga yang tidak ikut dan hanya menonton dari pinggir jalan.',q:'Menurutmu apa yang sebaiknya dilakukan?'},
+    {id:'s3',label:'Situasi 3',text:'Kamu dan temanmu berbeda pendapat tentang tugas kelompok. Temanmu bersikeras idenya yang paling benar.',q:'Bagaimana cara terbaik menyelesaikan perbedaan ini?'},
+    {id:'s4',label:'Situasi 4',text:'Seorang teman baru pindah ke kelasmu dan terlihat malu-malu dan belum punya teman.',q:'Apa yang akan kamu lakukan untuk membuat ia merasa nyaman?'},
+   ]},
+  {id:'L5',icon:'🧠',color:'#f26b6b',title:'Evaluasi & Refleksi',desc:'Uji pemahamanmu dan refleksikan pembelajaran!',type:'evaluation',
+   statements:[
+    {id:'e1',text:'Interaksi sosial membutuhkan kontak sosial dan komunikasi',ans:true},
+    {id:'e2',text:'Peraturan sekolah dibuat untuk mempersulit kehidupan siswa',ans:false},
+    {id:'e3',text:'Gotong royong adalah salah satu bentuk interaksi sosial positif',ans:true},
+    {id:'e4',text:'Kita boleh membuang sampah sembarangan di lingkungan',ans:false},
+    {id:'e5',text:'Menghormati orang yang lebih tua adalah kewajiban kita',ans:true},
+    {id:'e6',text:'Musyawarah adalah cara yang baik untuk menyelesaikan masalah bersama',ans:true},
+    {id:'e7',text:'Norma hukum bersumber dari hati nurani manusia',ans:false},
+    {id:'e8',text:'Gotong royong merupakan ciri khas dan kebanggaan bangsa Indonesia',ans:true},
+   ],
+   reflections:[
+    {id:'rf1',q:'Hal baru yang aku pelajari dari materi ini adalah...'},
+    {id:'rf2',q:'Hal yang paling menarik dan berkesan dari materi ini adalah...'},
+    {id:'rf3',q:'Contoh nyata interaksi sosial positif yang akan aku terapkan di sekolah...'},
+    {id:'rf4',q:'Contoh nyata interaksi sosial positif yang akan aku terapkan di masyarakat...'},
+   ]},
+];
+
+// ── HELPERS ──
+const LS_KEY = 'ipas_lkpd_alam_v1';
+function lsSave(){try{localStorage.setItem(LS_KEY,JSON.stringify({lkpdAnswers:state.lkpdAnswers,readSet:Array.from(state.readSet),matchingSel:state.matchingSel,matchingChecked:state.matchingChecked,evalChecked:state.evalChecked}));}catch(e){}}
+function lsLoad(){try{const raw=localStorage.getItem(LS_KEY);if(!raw)return;const d=JSON.parse(raw);if(d.lkpdAnswers)state.lkpdAnswers=d.lkpdAnswers;if(d.readSet)state.readSet=new Set(d.readSet);if(d.matchingSel)state.matchingSel=d.matchingSel;if(d.matchingChecked)state.matchingChecked=d.matchingChecked;if(d.evalChecked)state.evalChecked=d.evalChecked;}catch(e){}}
+function showDeleteConfirm(){const el=document.getElementById('delete-confirm');if(el)el.style.display='block';}
+function hideDeleteConfirm(){const el=document.getElementById('delete-confirm');if(el)el.style.display='none';}
+function lsClear(){try{localStorage.removeItem(LS_KEY);}catch(e){}state.lkpdAnswers={};state.readSet=new Set();state.matchingSel={};state.matchingChecked={};state.evalChecked={};state.accordionOpen={'ch2p1':0,'ch3p1':0};state.tabActive={'ch5p2':0};goTo('home');}
+
+function goTo(name,params={}){state.page=name;state.params=params;render();window.scrollTo(0,0);setTimeout(()=>{const sc=document.getElementById('content-scroll');if(sc)sc.scrollTop=0;},0);}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function getAns(id){return state.lkpdAnswers[id]||{};}
+
+function progressRing(pct,color,size=56){
+  const r=20,c=2*Math.PI*r,dash=c*pct/100;
+  return `<svg width="${size}" height="${size}" viewBox="0 0 48 48">
+    <circle cx="24" cy="24" r="${r}" fill="none" stroke="rgba(255,255,255,.2)" stroke-width="4"/>
+    <circle cx="24" cy="24" r="${r}" fill="none" stroke="${color}" stroke-width="4"
+      stroke-dasharray="${dash} ${c}" stroke-linecap="round" transform="rotate(-90 24 24)"/>
+    <text x="24" y="28" text-anchor="middle" font-size="10" font-weight="700" fill="${color}" font-family="Poppins,sans-serif">${pct}%</text>
+  </svg>`;
+}
+
+// ── NATURE DECORATIONS ──
+function bgLeaves(){
+  return `
+    <div style="position:absolute;top:-20px;left:-20px;width:100px;height:100px;color:#6fcf97;opacity:.15;transform:rotate(-30deg)">${SVG.leaf1}</div>
+    <div style="position:absolute;top:40px;right:-10px;width:70px;height:70px;color:#6fcf97;opacity:.12;transform:rotate(40deg)">${SVG.leaf2}</div>
+    <div style="position:absolute;bottom:20px;left:10px;width:60px;height:60px;color:#f9c846;opacity:.2;transform:rotate(15deg)">${SVG.flower}</div>
+    <div style="position:absolute;bottom:-10px;right:20px;width:50px;height:50px;color:#6fcf97;opacity:.15;transform:rotate(-20deg)">${SVG.leaf1}</div>`;
+}
+
+// ── BLOCK RENDERERS ──
+function renderBlock(block){
+  switch(block.type){
+    case 'lead': return `
+      <div style="font-size:15.5px;line-height:1.9;color:#0f2d1a;margin-bottom:18px;border-left:5px solid #2d8a52;padding:14px 18px;background:linear-gradient(to right,#c8f0d8,#edfaf3);border-radius:0 16px 16px 0;font-weight:700;position:relative;overflow:hidden">
+        <div style="position:absolute;right:-6px;top:-6px;width:36px;opacity:.15">${SVG.leaf1}</div>
+        🌿 ${block.text}
+      </div>`;
+    case 'callout': return `
+      <div style="background:${block.color};border-radius:18px;padding:18px 20px;margin-bottom:18px;border-left:6px solid ${block.borderColor};position:relative;overflow:hidden">
+        <div style="position:absolute;right:-10px;top:-10px;width:60px;height:60px;color:${block.borderColor};opacity:.15">${SVG.flower}</div>
+        <div style="position:absolute;right:8px;bottom:4px;width:36px;opacity:.2">${SVG.mushroom}</div>
+        <div style="font-weight:800;color:${block.borderColor};margin-bottom:8px;font-size:15px;font-family:'Poppins',sans-serif">${block.icon} ${block.label}</div>
+        <div style="color:#0f2d1a;font-size:14.5px;line-height:1.8;font-weight:700">${block.text}</div>
+      </div>`;
+    case 'visual-cards': return `
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:14px;margin-bottom:18px">
+        ${block.items.map((item,i)=>`
+          <div class="hover-lift nature-card" style="padding:20px 16px;text-align:center;position:relative;overflow:hidden">
+            <div style="position:absolute;top:-8px;right:-8px;width:40px;height:40px;color:${i===0?'#2d8a52':'#c97a00'};opacity:.15">${SVG.flower}</div>
+            <div style="font-size:38px;margin-bottom:12px">${item.icon}</div>
+            <div style="font-weight:800;color:#0f2d1a;font-size:15px;margin-bottom:8px;font-family:'Poppins',sans-serif">${item.title}</div>
+            <div style="color:#1f4d30;font-size:15px;line-height:1.75;font-weight:700">${item.desc}</div>
+          </div>`).join('')}
+      </div>`;
+    case 'icon-list': return `
+      <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:18px">
+        ${block.items.map(item=>`
+          <div class="hover-lift" style="display:flex;gap:14px;align-items:flex-start;background:#fff;border-radius:18px;padding:16px;box-shadow:0 3px 14px rgba(45,138,82,.12);border:2.5px solid #c8e6d4">
+            <div style="width:48px;height:48px;border-radius:14px;background:${item.color}22;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;border:2.5px solid ${item.color}55">${item.icon}</div>
+            <div>
+              <div style="font-weight:800;color:${item.color};font-size:15px;margin-bottom:5px;font-family:'Poppins',sans-serif">${item.title}</div>
+              <div style="color:#1f4d30;font-size:14px;line-height:1.75;font-weight:700">${item.desc}</div>
+            </div>
+          </div>`).join('')}
+      </div>`;
+    case 'role-accordion': return renderRoleAccordion(block);
+    case 'two-col-table': return `
+      <div style="border-radius:18px;overflow:hidden;box-shadow:0 4px 20px rgba(45,138,82,.12);margin-bottom:18px;border:2.5px solid #c8e6d4">
+        <div style="display:grid;grid-template-columns:1fr 1fr">
+          ${[block.colA,block.colB].map(col=>`
+            <div style="background:${col.color};padding:14px 16px;text-align:center">
+              <div style="font-size:26px;margin-bottom:5px">${col.icon}</div>
+              <div style="color:#fff;font-weight:800;font-size:14px;font-family:'Poppins',sans-serif;text-shadow:0 1px 4px rgba(0,0,0,.25)">${col.label}</div>
+            </div>`).join('')}
+        </div>
+        ${block.colA.items.map((item,i)=>`
+          <div style="display:grid;grid-template-columns:1fr 1fr;background:${i%2===0?'#edfaf3':'#fff'}">
+            <div style="padding:12px 14px;font-size:14px;color:#0f2d1a;border-right:2.5px solid #c8e6d4;font-weight:700">🌱 ${item}</div>
+            <div style="padding:12px 14px;font-size:14px;color:#0f2d1a;font-weight:700">🌻 ${block.colB.items[i]}</div>
+          </div>`).join('')}
+      </div>`;
+    case 'rule-grid': return `
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:18px">
+        ${block.items.map(item=>`
+          <div style="border-radius:18px;overflow:hidden;box-shadow:0 3px 14px rgba(0,0,0,.1);border:2.5px solid ${item.color}35">
+            <div style="background:${item.color};padding:12px 14px;display:flex;gap:8px;align-items:center">
+              <span style="font-size:22px">${item.icon}</span>
+              <span style="color:#fff;font-weight:800;font-size:14px;font-family:'Poppins',sans-serif;text-shadow:0 1px 4px rgba(0,0,0,.2)">${item.title}</span>
+            </div>
+            <div style="background:#fff;padding:12px 14px;display:flex;flex-direction:column;gap:8px">
+              ${item.items.map(t=>`<div style="display:flex;gap:8px;font-size:15px;color:#0f2d1a;font-weight:700;line-height:1.6"><span style="color:${item.color};font-size:15px;flex-shrink:0">🌿</span><span>${t}</span></div>`).join('')}
+            </div>
+          </div>`).join('')}
+      </div>`;
+    case 'norm-cards': return `
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:18px">
+        ${block.items.map(item=>`
+          <div class="hover-lift nature-card" style="padding:16px;position:relative;overflow:hidden">
+            <div style="position:absolute;top:-6px;right:-6px;width:36px;height:36px;color:${item.color};opacity:.15">${SVG.flower}</div>
+            <div style="display:flex;gap:10px;align-items:center;margin-bottom:10px">
+              <div style="width:42px;height:42px;border-radius:12px;background:${item.color}22;display:flex;align-items:center;justify-content:center;font-size:22px;border:2.5px solid ${item.color}45;flex-shrink:0">${item.icon}</div>
+              <div style="font-weight:800;color:${item.color};font-size:14px;font-family:'Poppins',sans-serif;line-height:1.2">${item.title}</div>
+            </div>
+            <div style="font-size:14px;color:#2d7a48;margin-bottom:7px;font-style:italic;font-weight:700;background:#e8f5ee;border-radius:8px;padding:5px 9px">${item.source}</div>
+            <div style="font-size:15px;color:#0f2d1a;line-height:1.65;background:${item.color}14;border-radius:10px;padding:9px 11px;font-weight:700">${item.example}</div>
+          </div>`).join('')}
+      </div>`;
+    case 'chip-cloud': return `
+      <div style="display:flex;flex-wrap:wrap;gap:9px;margin-bottom:18px">
+        ${block.items.map((item,i)=>`<span style="background:${['#c8f0d8','#cceeff','#fff3cc','#ffd6d6','#e8d5ff'][i%5]};border:2.5px solid ${['#2d8a52','#0e90c0','#c97a00','#c93030','#6d28d9'][i%5]};color:${['#0f3d1f','#073d5c','#4a2d00','#4a0000','#2d1060'][i%5]};border-radius:22px;padding:8px 18px;font-size:14px;font-weight:800;box-shadow:0 2px 8px rgba(0,0,0,.08)">${item}</span>`).join('')}
+      </div>`;
+    case 'tab-steps': return renderTabSteps(block);
+    case 'value-badges': return `
+      <div style="background:linear-gradient(135deg,#c8f0d8,#cceeff);border-radius:20px;padding:20px;border:2.5px solid #c8e6d4">
+        <div style="font-weight:800;color:#0f2d1a;margin-bottom:14px;font-size:16px;font-family:'Poppins',sans-serif">⭐ ${block.title}</div>
+        <div style="display:flex;gap:8px;flex-wrap:wrap">
+          ${block.items.map((item)=>`
+            <div class="hover-lift" style="background:#fff;border-radius:16px;padding:14px 12px;text-align:center;min-width:78px;flex:1;box-shadow:0 3px 12px rgba(45,138,82,.12);border:2.5px solid #c8e6d4">
+              <div style="font-size:26px;margin-bottom:6px">${item.icon}</div>
+              <div style="font-weight:800;font-size:14px;color:#0f2d1a;font-family:'Poppins',sans-serif;line-height:1.3">${item.label}</div>
+            </div>`).join('')}
+        </div>
+      </div>`;
+    case 'big-cards': return `
+      <div style="display:flex;flex-direction:column;gap:14px;margin-bottom:18px">
+        ${block.items.map(item=>`
+          <div style="border-radius:20px;overflow:hidden;box-shadow:0 4px 20px rgba(0,0,0,.1);border:2.5px solid ${item.color}30">
+            <div style="background:${item.color};padding:16px 20px;display:flex;gap:14px;align-items:center;position:relative;overflow:hidden">
+              <div style="position:absolute;right:-15px;top:-15px;width:70px;height:70px;color:#fff;opacity:.12">${SVG.flower}</div>
+              <span style="font-size:32px">${item.icon}</span>
+              <span style="color:#fff;font-weight:800;font-size:18px;font-family:'Poppins',sans-serif;text-shadow:0 2px 6px rgba(0,0,0,.2)">${item.title}</span>
+            </div>
+            <div style="background:#fff;padding:16px 20px">
+              <div style="display:flex;flex-direction:column;gap:9px;margin-bottom:12px">
+                ${item.points.map(p=>`<div style="display:flex;gap:10px;font-size:14.5px;color:#0f2d1a;font-weight:700;line-height:1.65"><span style="color:${item.color};font-size:18px;flex-shrink:0">🌱</span><span>${p}</span></div>`).join('')}
+              </div>
+              <div style="background:${item.color}15;border-radius:12px;padding:11px 14px;font-size:14px;color:#1f4d30;font-style:italic;font-weight:700;border-left:4px solid ${item.color}70;line-height:1.65">${item.example}</div>
+            </div>
+          </div>`).join('')}
+      </div>`;
+    default: return '';
+  }
+}
+
+function renderRoleAccordion(block){
+  const bid = block.blockId;
+  if(state.accordionOpen[bid]===undefined) state.accordionOpen[bid]=0;
+  const open = state.accordionOpen[bid];
+  return `
+    <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:18px">
+      ${block.items.map((item,i)=>`
+        <div style="border-radius:18px;overflow:hidden;box-shadow:0 3px 16px rgba(0,0,0,.1);border:2.5px solid ${open===i?item.color+'70':'#c8e6d4'}">
+          <button class="btn-press" onclick="toggleAccordion('${bid}',${i},'content-scroll')"
+            style="width:100%;background:${open===i?item.color:'#edfaf3'};border:none;padding:15px 18px;display:flex;align-items:center;gap:12px;cursor:pointer;text-align:left;font-family:'Poppins',sans-serif">
+            <div style="width:44px;height:44px;border-radius:14px;background:${open===i?'rgba(255,255,255,.28)':item.color+'22'};display:flex;align-items:center;justify-content:center;font-size:24px;flex-shrink:0">${item.icon}</div>
+            <span style="flex:1;font-weight:800;color:${open===i?'#fff':item.color};font-size:15px;font-family:'Poppins',sans-serif">${item.role}</span>
+            <div style="width:30px;height:30px;border-radius:50%;background:${open===i?'rgba(255,255,255,.22)':item.color+'22'};display:flex;align-items:center;justify-content:center">
+              <span style="color:${open===i?'#fff':item.color};font-size:18px;display:inline-block;transition:transform .3s;transform:${open===i?'rotate(180deg)':'rotate(0deg)'}">▾</span>
+            </div>
+          </button>
+          ${open===i?`
+          <div style="background:#f4fdf7;padding:14px 18px;display:flex;flex-direction:column;gap:9px">
+            ${item.items.map(t=>`
+              <div style="display:flex;gap:10px;align-items:flex-start;font-size:14.5px;color:#0f2d1a;font-weight:700;background:#fff;border-radius:12px;padding:11px 14px;border:2px solid #c8e6d4;line-height:1.65">
+                <span style="color:${item.color};font-size:18px;flex-shrink:0">🌿</span><span>${t}</span>
+              </div>`).join('')}
+          </div>`:''}
+        </div>`).join('')}
+    </div>`;
+}
+
+function renderTabSteps(block){
+  const bid = block.blockId;
+  if(state.tabActive[bid]===undefined) state.tabActive[bid]=0;
+  const active = state.tabActive[bid];
+  const tab = block.tabs[active];
+  return `
+    <div style="margin-bottom:18px">
+      <div style="display:flex;gap:10px;margin-bottom:14px">
+        ${block.tabs.map((t,i)=>`
+          <button class="btn-press" onclick="setTabActive('${bid}',${i},'content-scroll')"
+            style="flex:1;padding:13px 12px;border-radius:16px;border:2.5px solid ${active===i?t.color:'#c8e6d4'};cursor:pointer;font-family:'Poppins',sans-serif;font-size:15px;background:${active===i?t.color:'#edfaf3'};color:${active===i?'#fff':'#1f4d30'};transition:all .2s;box-shadow:${active===i?`0 4px 16px ${t.color}50`:'none'};font-weight:400">
+            ${t.icon} ${t.label}
+          </button>`).join('')}
+      </div>
+      <div style="background:#fff;border-radius:18px;padding:18px;box-shadow:0 3px 16px rgba(45,138,82,.1);border:2.5px solid #c8e6d4">
+        ${tab.steps.map((step,i)=>`
+          <div style="display:flex;gap:14px;align-items:flex-start;padding:12px 0;${i<tab.steps.length-1?'border-bottom:2px dashed #c8e6d4':''}">
+            <div style="width:32px;height:32px;border-radius:50%;background:${tab.color};color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;flex-shrink:0;font-family:'Poppins',sans-serif;box-shadow:0 3px 10px ${tab.color}50">${i+1}</div>
+            <span style="font-size:14.5px;color:#0f2d1a;line-height:1.8;padding-top:5px;font-weight:700">${step}</span>
+          </div>`).join('')}
+      </div>
+    </div>`;
+}
+
+// ── LKPD RENDERERS ──
+function renderLkpdEssay(act){
+  const ans=getAns(act.id);
+  return `
+    <div style="display:flex;flex-direction:column;gap:16px">
+      <div style="display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,${act.color}15,${act.color}05);border-radius:16px;padding:14px 16px;border:2px solid ${act.color}25;margin-bottom:4px">
+        <div style="width:56px;flex-shrink:0">${SVG.caterpillar}</div>
+        <div style="font-size:14.5px;color:#0f2d1a;font-weight:700;line-height:1.6">${(()=>{const m=MASCOT_INFO[['caterpillar','bee','bird','frog','caterpillar'][LKPD_ACTIVITIES.indexOf(act)%5]]||MASCOT_INFO.caterpillar;return m.emoji+' <b style="color:'+act.color+'">'+m.name+' bilang:</b>';})()}" Jawab dengan kalimatmu sendiri ya! Tidak perlu sama persis dengan buku!"</div>
+      </div>
+      ${act.questions.map(q=>`
+        <div style="background:#fff;border-radius:20px;padding:20px;box-shadow:0 4px 18px rgba(45,138,82,.1);border:2.5px solid ${act.color}35;position:relative;overflow:hidden">
+          <div style="position:absolute;right:-8px;top:-8px;width:40px;opacity:.07">${SVG.flower}</div>
+          <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:14px">
+            <div style="width:36px;height:36px;border-radius:12px;background:${act.color};color:#fff;display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:800;flex-shrink:0;font-family:'Poppins',sans-serif;box-shadow:0 4px 12px ${act.color}50">${q.num}</div>
+            <div style="font-weight:800;color:#0f2d1a;font-size:15px;line-height:1.65">${q.text}</div>
+          </div>
+          <textarea rows="${q.rows}" placeholder="✍️ Tuliskan jawabanmu di sini..."
+            oninput="saveAns('${act.id}','${q.id}',this.value)"
+            onfocus="this.style.borderColor='${act.color}'"
+            onblur="this.style.borderColor='${act.color}40'"
+            style="width:100%;border:2.5px solid ${act.color}40;border-radius:14px;padding:13px 15px;font-size:14.5px;resize:vertical;outline:none;line-height:1.75;background:#f4fdf7;transition:border-color .2s;box-sizing:border-box;color:#0f2d1a;font-family:'Poppins',sans-serif;font-weight:700">${esc(ans[q.id]||'')}</textarea>
+        </div>`).join('')}
+    </div>`;
+}
+
+function renderLkpdTableFill(act){
+  const ans=getAns(act.id);
+  return `
+    <div>
+      <div style="font-weight:800;color:#0f2d1a;margin-bottom:12px;font-size:16px;font-family:'Poppins',sans-serif">🌿 A. Tabel Peran Warga Sekolah</div>
+      <div style="border-radius:18px;overflow:hidden;box-shadow:0 4px 18px rgba(45,138,82,.12);margin-bottom:22px;border:2.5px solid ${act.color}40">
+        <div style="display:grid;grid-template-columns:1.2fr 1.5fr 1.5fr;background:${act.color}">
+          ${['Warga Sekolah','Peran / Tugas','Tanggung Jawab'].map(h=>`<div style="padding:13px 14px;color:#fff;font-weight:800;font-size:14px;font-family:'Poppins',sans-serif;text-shadow:0 1px 4px rgba(0,0,0,.2)">${h}</div>`).join('')}
+        </div>
+        ${act.tableRows.map((row,i)=>`
+          <div style="display:grid;grid-template-columns:1.2fr 1.5fr 1.5fr;background:${i%2===0?'#edfaf3':'#fff'}">
+            <div style="padding:11px 14px;font-weight:800;color:${act.color};font-size:14px;display:flex;align-items:center;font-family:'Poppins',sans-serif">${row.role}</div>
+            ${row.keys.map(k=>`
+              <div style="padding:7px">
+                <textarea rows="2" placeholder="Isi di sini..." oninput="saveAns('${act.id}','${k}',this.value)"
+                  style="width:100%;border:2px solid ${act.color}35;border-radius:10px;padding:8px 10px;font-size:15px;resize:none;outline:none;background:#fff;line-height:1.6;box-sizing:border-box;color:#0f2d1a;font-family:'Poppins',sans-serif;font-weight:700">${esc(ans[k]||'')}</textarea>
+              </div>`).join('')}
+          </div>`).join('')}
+      </div>
+      <div style="font-weight:800;color:#0f2d1a;margin-bottom:12px;font-size:16px;font-family:'Poppins',sans-serif">🌻 B. Hak dan Kewajiban Saya sebagai Siswa</div>
+      <div style="border-radius:18px;overflow:hidden;box-shadow:0 4px 18px rgba(45,138,82,.12);border:2.5px solid ${act.color}40">
+        <div style="display:grid;grid-template-columns:1fr 1fr;background:${act.color}">
+          ${['HAK SAYA','KEWAJIBAN SAYA'].map(h=>`<div style="padding:13px 14px;color:#fff;font-weight:800;font-size:14px;font-family:'Poppins',sans-serif;text-shadow:0 1px 4px rgba(0,0,0,.2)">${h}</div>`).join('')}
+        </div>
+        ${act.hakKeys.map((hk,i)=>`
+          <div style="display:grid;grid-template-columns:1fr 1fr;background:${i%2===0?'#edfaf3':'#fff'}">
+            <div style="padding:7px;border-right:2.5px solid ${act.color}20">
+              <input value="${esc(ans[hk]||'')}" placeholder="Hak ke-${i+1}..." oninput="saveAns('${act.id}','${hk}',this.value)"
+                style="width:100%;border:2px solid ${act.color}35;border-radius:10px;padding:10px 12px;font-size:14px;outline:none;background:#fff;box-sizing:border-box;color:#0f2d1a;font-family:'Poppins',sans-serif;font-weight:700"/>
+            </div>
+            <div style="padding:7px">
+              <input value="${esc(ans[act.kwjbKeys[i]]||'')}" placeholder="Kewajiban ke-${i+1}..." oninput="saveAns('${act.id}','${act.kwjbKeys[i]}',this.value)"
+                style="width:100%;border:2px solid ${act.color}35;border-radius:10px;padding:10px 12px;font-size:14px;outline:none;background:#fff;box-sizing:border-box;color:#0f2d1a;font-family:'Poppins',sans-serif;font-weight:700"/>
+            </div>
+          </div>`).join('')}
+      </div>
+    </div>`;
+}
+
+function renderLkpdRulesMatching(act){
+  const ans=getAns(act.id);
+  const sel=state.matchingSel[act.id]||{};
+  const checked=state.matchingChecked[act.id]||false;
+  const score=act.matching.pairs.filter((p,i)=>sel[i]===p.correct).length;
+  return `
+    <div>
+      <div style="display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,${act.color}15,${act.color}05);border-radius:16px;padding:14px 16px;border:2px solid ${act.color}25;margin-bottom:16px">
+        <div style="width:50px;flex-shrink:0">${SVG.bird}</div>
+        <div style="font-size:14.5px;color:#0f2d1a;font-weight:700;line-height:1.6">🐦 <b style="color:${act.color}">Biru si Burung bilang:</b> "Tuliskan peraturan di sekolahmu, lalu cocokkan norma yang tepat!"</div>
+      </div>
+      <div style="font-weight:800;color:#0f2d1a;margin-bottom:12px;font-size:16px;font-family:'Poppins',sans-serif">🌿 A. Lima Peraturan di Sekolahku</div>
+      <div style="display:flex;flex-direction:column;gap:9px;margin-bottom:22px">
+        ${act.ruleKeys.map((k,i)=>`
+          <div style="display:flex;align-items:center;gap:10px;background:#fff;border-radius:14px;padding:11px 14px;box-shadow:0 2px 10px rgba(45,138,82,.09);border:2.5px solid ${act.color}30">
+            <div style="width:32px;height:32px;border-radius:10px;background:${act.color};color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;flex-shrink:0;font-family:'Poppins',sans-serif">${i+1}</div>
+            <input value="${esc(ans[k]||'')}" placeholder="Tuliskan peraturan..." oninput="saveAns('${act.id}','${k}',this.value)"
+              style="flex:1;border:2px solid ${act.color}35;border-radius:10px;padding:10px 13px;font-size:14px;outline:none;background:#f4fdf7;color:#0f2d1a;font-family:'Poppins',sans-serif;font-weight:700"/>
+          </div>`).join('')}
+      </div>
+      <div style="font-weight:800;color:#0f2d1a;margin-bottom:10px;font-size:16px;font-family:'Poppins',sans-serif">🌻 B. Cocokkan Norma dengan Contohnya!</div>
+      <div style="background:linear-gradient(135deg,#c8f0d8,#cceeff);border-radius:18px;padding:16px;margin-bottom:14px;border:2.5px solid #c8e6d4">
+        <div style="font-weight:800;font-size:14px;color:#0f2d1a;margin-bottom:12px;font-family:'Poppins',sans-serif">📌 Pilihan Jawaban:</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:9px">
+          ${act.matching.choices.map(c=>`
+            <div style="background:#fff;border-radius:12px;padding:11px 13px;font-size:14px;display:flex;gap:9px;align-items:center;box-shadow:0 2px 8px rgba(45,138,82,.1);border:2px solid #c8e6d4">
+              <span style="background:${act.color};color:#fff;border-radius:8px;padding:3px 11px;font-weight:800;font-size:14px;flex-shrink:0;font-family:'Poppins',sans-serif">${c.letter}</span>
+              <span style="color:#0f2d1a;font-weight:700;font-size:15px;line-height:1.5">${c.text}</span>
+            </div>`).join('')}
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:9px;margin-bottom:16px">
+        ${act.matching.pairs.map((pair,i)=>{
+          const ok=checked&&sel[i]===pair.correct;
+          const bad=checked&&sel[i]&&sel[i]!==pair.correct;
+          return `
+          <div style="display:flex;align-items:center;gap:12px;padding:13px 16px;border-radius:16px;background:${ok?'#c8f0d8':bad?'#ffd6d6':'#fff'};border:2.5px solid ${ok?'#2d8a52':bad?'#c93030':'#c8e6d4'};box-shadow:0 2px 10px rgba(45,138,82,.08);transition:all .3s">
+            <span style="font-weight:800;color:#0f2d1a;font-size:14.5px;flex:1;font-family:'Poppins',sans-serif">${pair.norma}</span>
+            <select onchange="setMatchingSel('${act.id}',${i},this.value)"
+              style="padding:9px 13px;border-radius:11px;border:2.5px solid ${act.color}50;font-size:14px;font-family:'Poppins',sans-serif;outline:none;background:#fff;cursor:pointer;color:#0f2d1a;font-weight:800">
+              <option value="">Pilih...</option>
+              ${act.matching.choices.map(c=>`<option value="${c.letter}" ${sel[i]===c.letter?'selected':''}>${c.letter}</option>`).join('')}
+            </select>
+            ${ok?`<span style="font-size:24px">✅</span>`:''}
+            ${bad?`<span style="font-size:24px">❌</span>`:''}
+          </div>`;
+        }).join('')}
+      </div>
+      <button class="btn-press" onclick="checkMatching('${act.id}')"
+        style="background:${act.color};color:#fff;border:none;border-radius:16px;padding:14px 30px;cursor:pointer;font-weight:800;font-size:15px;font-family:'Poppins',sans-serif;box-shadow:0 5px 18px ${act.color}50">
+        Cek Jawaban ✓
+      </button>
+      ${checked?`
+        <div style="margin-top:14px;background:${score===4?'#c8f0d8':'#fff3cc'};border-radius:16px;padding:15px 18px;font-weight:800;color:${score===4?'#0f3d1f':'#4a2d00'};font-size:15px;font-family:'Poppins',sans-serif;border:2.5px solid ${score===4?'#2d8a52':'#c97a00'}50">
+          ${score===4?'🎉 Semua benar! Luar biasa!':score>=2?`👍 ${score}/4 benar. Hampir sempurna!`:`💪 ${score}/4 benar. Coba lagi ya!`}
+        </div>`:''}
+    </div>`;
+}
+
+function renderLkpdScenario(act){
+  const ans=getAns(act.id);
+  return `
+    <div style="display:flex;flex-direction:column;gap:18px">
+      <div style="display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,${act.color}15,${act.color}05);border-radius:16px;padding:14px 16px;border:2px solid ${act.color}25;margin-bottom:4px">
+        <div style="width:50px;flex-shrink:0">${SVG.frog}</div>
+        <div style="font-size:14.5px;color:#0f2d1a;font-weight:700;line-height:1.6">🐸 <b style="color:${act.color}">Koko si Katak bilang:</b> "Bayangkan kamu ada di situasi ini. Apa yang akan kamu lakukan?"</div>
+      </div>
+      ${act.scenarios.map((s)=>`
+        <div style="border-radius:20px;overflow:hidden;box-shadow:0 4px 18px rgba(45,138,82,.1);border:2.5px solid ${act.color}35">
+          <div style="background:${act.color}18;border-left:6px solid ${act.color};padding:15px 18px">
+            <div style="font-weight:800;color:${act.color};margin-bottom:8px;font-size:14px;font-family:'Poppins',sans-serif">🌿 ${s.label}</div>
+            <div style="color:#0f2d1a;font-size:15px;line-height:1.8;font-weight:700">${s.text}</div>
+          </div>
+          <div style="background:#fff;padding:15px 18px">
+            <div style="font-weight:800;color:#0f2d1a;margin-bottom:10px;font-size:14.5px;font-family:'Poppins',sans-serif">❓ ${s.q}</div>
+            <textarea rows="3" placeholder="✍️ Tuliskan responmu..."
+              oninput="saveAns('${act.id}','${s.id}',this.value)"
+              onfocus="this.style.borderColor='${act.color}'"
+              onblur="this.style.borderColor='${act.color}40'"
+              style="width:100%;border:2.5px solid ${act.color}40;border-radius:14px;padding:12px 14px;font-size:14.5px;resize:vertical;outline:none;background:#f4fdf7;line-height:1.75;box-sizing:border-box;color:#0f2d1a;font-family:'Poppins',sans-serif;font-weight:700">${esc(ans[s.id]||'')}</textarea>
+          </div>
+        </div>`).join('')}
+    </div>`;
+}
+
+function renderLkpdEvaluation(act){
+  const ans=getAns(act.id);
+  const checked=state.evalChecked[act.id]||false;
+  const score=act.statements.filter(s=>ans[s.id]!==undefined&&ans[s.id]===s.ans).length;
+  return `
+    <div>
+      <div style="display:flex;align-items:center;gap:12px;background:linear-gradient(135deg,${act.color}15,${act.color}05);border-radius:16px;padding:14px 16px;border:2px solid ${act.color}25;margin-bottom:16px">
+        <div style="width:50px;flex-shrink:0">${SVG.bee}</div>
+        <div style="font-size:14.5px;color:#0f2d1a;font-weight:700;line-height:1.6">🐝 <b style="color:${act.color}">Beby si Lebah bilang:</b> "Ini soal terakhir! Jawab dengan jujur sesuai yang kamu pahami ya!"</div>
+      </div>
+      <div style="font-weight:800;color:#0f2d1a;margin-bottom:14px;font-size:16px;font-family:'Poppins',sans-serif">🌿 A. Setuju atau Tidak Setuju?</div>
+      <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:18px">
+        ${act.statements.map((s,i)=>{
+          const uv=ans[s.id];
+          const ok=checked&&uv===s.ans;
+          const bad=checked&&uv!==undefined&&uv!==s.ans;
+          return `
+          <div style="display:flex;align-items:center;gap:10px;padding:13px 15px;border-radius:16px;background:${ok?'#c8f0d8':bad?'#ffd6d6':'#fff'};border:2.5px solid ${ok?'#2d8a52':bad?'#c93030':'#c8e6d4'};transition:all .3s;box-shadow:0 2px 10px rgba(45,138,82,.07)">
+            <span style="font-weight:800;color:#1f4d30;font-size:14px;flex-shrink:0;width:26px;font-family:'Poppins',sans-serif">${i+1}.</span>
+            <span style="flex:1;font-size:14.5px;color:#0f2d1a;line-height:1.6;font-weight:700">${s.text}</span>
+            <div style="display:flex;gap:6px;flex-shrink:0">
+              <button class="btn-press" onclick="setEvalAns('${act.id}','${s.id}',true)"
+                style="padding:8px 14px;border-radius:11px;border:2.5px solid ${uv===true?'#2d8a52':'#c8e6d4'};cursor:pointer;font-weight:800;font-size:14.5px;font-family:'Poppins',sans-serif;background:${uv===true?'#2d8a52':'#edfaf3'};color:${uv===true?'#fff':'#1f4d30'};transition:all .2s">✅ Setuju</button>
+              <button class="btn-press" onclick="setEvalAns('${act.id}','${s.id}',false)"
+                style="padding:8px 14px;border-radius:11px;border:2.5px solid ${uv===false?'#c93030':'#c8e6d4'};cursor:pointer;font-weight:800;font-size:14.5px;font-family:'Poppins',sans-serif;background:${uv===false?'#c93030':'#fff5f5'};color:${uv===false?'#fff':'#4a0000'};transition:all .2s">❌ Tidak</button>
+            </div>
+            ${ok?`<span style="font-size:20px;flex-shrink:0">🌟</span>`:''}
+            ${bad?`<span style="font-size:20px;flex-shrink:0">💪</span>`:''}
+          </div>`;
+        }).join('')}
+      </div>
+      <button class="btn-press" onclick="checkEval('${act.id}')"
+        style="background:${act.color};color:#fff;border:none;border-radius:16px;padding:14px 30px;cursor:pointer;font-weight:800;font-size:15px;font-family:'Poppins',sans-serif;margin-bottom:16px;box-shadow:0 5px 18px ${act.color}50">
+        Cek Jawaban ✓
+      </button>
+      ${checked?`
+        <div style="background:${score>=7?'#c8f0d8':score>=5?'#fff3cc':'#ffd6d6'};border-radius:18px;padding:18px 22px;margin-bottom:22px;display:flex;gap:16px;align-items:center;border:2.5px solid ${score>=7?'#2d8a52':score>=5?'#c97a00':'#c93030'}50">
+          ${progressRing(Math.round(score/act.statements.length*100),score>=7?'#2d8a52':score>=5?'#c97a00':'#c93030')}
+          <div>
+            <div style="font-weight:800;font-size:17px;color:#0f2d1a;font-family:'Poppins',sans-serif">Skor: ${score}/${act.statements.length}</div>
+            <div style="font-size:14px;color:#1f4d30;margin-top:4px;font-weight:700">${score>=7?'🎉 Luar biasa! Kamu sangat hebat!':score>=5?'👍 Bagus! Terus semangat belajar!':'💪 Yuk baca lagi materinya, kamu pasti bisa!'}</div>
+          </div>
+        </div>`:''}
+      <div style="font-weight:800;color:#0f2d1a;margin-bottom:14px;font-size:16px;font-family:'Poppins',sans-serif">🌻 B. Refleksi Diri</div>
+      <div style="background:linear-gradient(135deg,#fff3cc,#fde8c0);border-radius:20px;padding:20px;border:2.5px solid #c97a0040">
+        ${act.reflections.map(r=>`
+          <div style="margin-bottom:16px">
+            <div style="font-weight:800;color:#0f2d1a;font-size:14.5px;margin-bottom:9px;font-family:'Poppins',sans-serif">💭 ${r.q}</div>
+            <textarea rows="3" placeholder="✍️ Tuliskan refleksimu..."
+              oninput="saveAns('${act.id}','${r.id}',this.value)"
+              onfocus="this.style.borderColor='#c97a00'"
+              onblur="this.style.borderColor='#c97a0050'"
+              style="width:100%;border:2.5px solid #c97a0050;border-radius:14px;padding:12px 14px;font-size:14.5px;resize:vertical;outline:none;background:#fff;line-height:1.75;box-sizing:border-box;color:#0f2d1a;font-family:'Poppins',sans-serif;font-weight:700">${esc(ans[r.id]||'')}</textarea>
+          </div>`).join('')}
+      </div>
+    </div>`;
+}
+
+function renderLkpdActivity(act){
+  if(act.type==='essay') return renderLkpdEssay(act);
+  if(act.type==='table-fill') return renderLkpdTableFill(act);
+  if(act.type==='rules-matching') return renderLkpdRulesMatching(act);
+  if(act.type==='scenario') return renderLkpdScenario(act);
+  if(act.type==='evaluation') return renderLkpdEvaluation(act);
+  return '';
+}
+
+// ── PAGES ──
+function renderHome(){
+  return `
+    <div style="min-height:100vh;background:linear-gradient(160deg,#0f3d22 0%,#1a5c35 40%,#2d8a52 75%,#6fcf97 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 20px;position:relative;overflow:hidden">
+      <!-- decorative nature elements -->
+      <div style="position:absolute;top:-30px;left:-30px;width:180px;height:180px;color:#6fcf97;opacity:.12;transform:rotate(-20deg)">${SVG.leaf1}</div>
+      <div style="position:absolute;top:60px;right:-20px;width:130px;height:130px;color:#f9c846;opacity:.15;transform:rotate(40deg)">${SVG.flower}</div>
+      <div style="position:absolute;bottom:-20px;left:10px;width:120px;height:120px;color:#6fcf97;opacity:.1;transform:rotate(15deg)">${SVG.leaf2}</div>
+      <div style="position:absolute;bottom:60px;right:-10px;width:100px;height:100px;color:#6fcf97;opacity:.12;transform:rotate(-30deg)">${SVG.leaf1}</div>
+      <div class="float" style="position:absolute;top:20px;left:50%;width:60px;height:60px;color:#f9c846;opacity:.2">${SVG.sun}</div>
+      <!-- tiny floating leaves -->
+      <div class="sway" style="position:absolute;top:35%;left:5%;width:40px;height:40px;color:#a8f0c6;opacity:.3">${SVG.leaf1}</div>
+      <div class="sway" style="position:absolute;top:55%;right:6%;width:35px;height:35px;color:#a8f0c6;opacity:.25;animation-delay:.8s">${SVG.leaf2}</div>
+      <div class="float" style="position:absolute;top:15%;left:8%;width:55px;color:rgba(255,255,255,.12);animation-delay:.5s">${SVG.cloud}</div>
+      <div class="float" style="position:absolute;top:20%;right:5%;width:45px;color:rgba(255,255,255,.1);animation-delay:1.2s">${SVG.cloud}</div>
+      <div style="position:absolute;bottom:15%;left:50%;transform:translateX(-50%);width:90px;opacity:.1">${SVG.rainbow}</div>
+
+      <div style="max-width:500px;width:100%;text-align:center;position:relative;z-index:1">
+        <!-- badge -->
+        <div class="fade-up" style="display:inline-flex;align-items:center;gap:8px;background:rgba(249,200,70,.2);border:2px solid rgba(249,200,70,.5);border-radius:24px;padding:6px 20px;margin-bottom:22px">
+          <span style="font-size:14px">🌿</span>
+          <span style="font-size:15px;font-weight:800;color:#f9c846;letter-spacing:1.5px;font-family:'Poppins',sans-serif">IPAS · KELAS IV · KURIKULUM MERDEKA</span>
+          <span style="font-size:14px">🌿</span>
+        </div>
+        <!-- title -->
+        <div class="float" style="font-size:64px;margin-bottom:8px">🤝</div>
+        <h1 class="fade-up a2" style="font-family:'Poppins',sans-serif;font-size:clamp(32px,8vw,52px);color:#fff;margin-bottom:8px;line-height:1.15;text-shadow:0 3px 20px rgba(0,0,0,.3)">Interaksi Sosial</h1>
+        <p class="fade-up a3" style="color:rgba(255,255,255,.85);font-size:16px;margin-bottom:6px;font-weight:700">di Lingkungan Sekolah dan Masyarakat</p>
+        <p class="fade-up a3" style="color:rgba(255,255,255,.55);font-size:14.5px;margin-bottom:32px;font-weight:600">
+          Penulis: <span style="color:#f9c846;font-weight:800">Muhammad Fajar Wibowo</span>
+        </p>
+        <!-- stat strip -->
+        <div class="fade-up a4" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:28px">
+          ${[['📖','5 Bab','Materi Lengkap','#d4f0e0','#2d8a52'],['✏️','5 Kegiatan','LKPD Interaktif','#dff4fc','#5bc4e8'],['🎯','4 Tujuan','Pembelajaran','#fff8dc','#e8913d']].map(([ic,v,l,bg,c])=>`
+            <div class="hover-lift" style="background:rgba(255,255,255,.12);border-radius:18px;padding:16px 8px;border:2px solid rgba(255,255,255,.18);backdrop-filter:blur(10px)">
+              <div style="font-size:26px;margin-bottom:6px">${ic}</div>
+              <div style="color:#fff;font-weight:800;font-size:16px;font-family:'Poppins',sans-serif">${v}</div>
+              <div style="color:rgba(255,255,255,.6);font-size:15px;font-weight:600">${l}</div>
+            </div>`).join('')}
+        </div>
+        <!-- main buttons -->
+        <div class="fade-up a5" style="display:flex;flex-direction:column;gap:12px;margin-bottom:20px">
+          <button class="btn-press hover-lift" onclick="goTo('cover')"
+            style="background:linear-gradient(135deg,#f9c846,#e8913d);color:#1d3c2a;border:none;border-radius:18px;padding:18px;font-size:17px;font-weight:800;cursor:pointer;font-family:'Poppins',sans-serif;box-shadow:0 8px 30px rgba(249,200,70,.5);letter-spacing:.3px">
+            📚 Mulai Belajar!
+          </button>
+          <button class="btn-press" onclick="goTo('lkpd-home')"
+            style="background:rgba(255,255,255,.14);color:#fff;border:2px solid rgba(255,255,255,.3);border-radius:18px;padding:15px;font-size:15px;font-weight:800;cursor:pointer;font-family:'Poppins',sans-serif">
+            ✏️ Langsung ke LKPD
+          </button>
+        </div>
+        <!-- identity card - focused & prominent -->
+        <div class="fade-up a5" style="background:rgba(255,255,255,.12);border:2.5px solid rgba(249,200,70,.5);border-radius:22px;padding:22px;margin-bottom:22px;text-align:left;backdrop-filter:blur(12px);box-shadow:0 8px 32px rgba(0,0,0,.2)">
+          <!-- header -->
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px">
+            <div style="width:40px;height:40px;border-radius:12px;background:rgba(249,200,70,.25);display:flex;align-items:center;justify-content:center;font-size:22px;border:2px solid rgba(249,200,70,.4)">📋</div>
+            <div>
+              <p style="color:#f9c846;font-size:16px;font-weight:800;margin:0;font-family:'Poppins',sans-serif">Identitas Siswa</p>
+              <p style="color:rgba(255,255,255,.55);font-size:14px;font-weight:600;margin:0">Isi dengan lengkap sebelum mulai belajar</p>
+            </div>
+          </div>
+          <!-- fields -->
+          <div style="display:flex;flex-direction:column;gap:12px">
+            <!-- Nama -->
+            <div>
+              <label style="color:rgba(255,255,255,.8);font-size:14px;font-weight:700;margin-bottom:6px;display:block;font-family:'Poppins',sans-serif">👤 Nama Lengkap</label>
+              <input id="id-nama"
+                value="${(()=>{try{return localStorage.getItem('ipas_id_nama')||'';}catch(e){return '';}})()}"
+                placeholder="Tulis nama lengkapmu..."
+                oninput="localStorage.setItem('ipas_id_nama',this.value);populateTopbarName()"
+                style="width:100%;background:rgba(255,255,255,.18);border:2.5px solid rgba(255,255,255,.3);border-radius:14px;padding:13px 16px;font-size:15px;color:#fff;font-family:'Poppins',sans-serif;font-weight:700;outline:none;box-sizing:border-box;transition:border-color .2s,box-shadow .2s"
+                onfocus="this.style.borderColor='#f9c846';this.style.boxShadow='0 0 0 4px rgba(249,200,70,.2)'"
+                onblur="this.style.borderColor='rgba(255,255,255,.3)';this.style.boxShadow='none'"
+              />
+            </div>
+            <!-- Kelas -->
+            <div>
+              <label style="color:rgba(255,255,255,.8);font-size:14px;font-weight:700;margin-bottom:6px;display:block;font-family:'Poppins',sans-serif">🏫 Kelas</label>
+              <select id="id-kelas"
+                onchange="localStorage.setItem('ipas_id_kelas',this.value);populateTopbarName()"
+                style="width:100%;background:rgba(255,255,255,.18);border:2.5px solid rgba(255,255,255,.3);border-radius:14px;padding:13px 16px;font-size:15px;color:#fff;font-family:'Poppins',sans-serif;font-weight:700;outline:none;box-sizing:border-box;transition:border-color .2s,box-shadow .2s;cursor:pointer;appearance:none;-webkit-appearance:none;background-image:url('data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2220%22 height=%2220%22 viewBox=%220 0 20 20%22><path fill=%22white%22 d=%22M5 7l5 5 5-5%22/></svg>');background-repeat:no-repeat;background-position:right 16px center;color-scheme:dark"
+                onfocus="this.style.borderColor='#f9c846';this.style.boxShadow='0 0 0 4px rgba(249,200,70,.2)'"
+                onblur="this.style.borderColor='rgba(255,255,255,.3)';this.style.boxShadow='none'">
+                <option value="" style="background:#1a5c35;color:#fff" disabled ${(()=>{try{return !localStorage.getItem('ipas_id_kelas')?'selected':'';}catch(e){return 'selected';}})()}>-- Pilih Kelas --</option>
+                <option value="IV-A" style="background:#1a5c35;color:#fff" ${(()=>{try{return localStorage.getItem('ipas_id_kelas')==='IV-A'?'selected':'';}catch(e){return '';}})()}>IV-A</option>
+                <option value="IV-B" style="background:#1a5c35;color:#fff" ${(()=>{try{return localStorage.getItem('ipas_id_kelas')==='IV-B'?'selected':'';}catch(e){return '';}})()}>IV-B</option>
+              </select>
+            </div>
+            <!-- Tanggal Lahir -->
+            <div>
+              <label style="color:rgba(255,255,255,.8);font-size:14px;font-weight:700;margin-bottom:6px;display:block;font-family:'Poppins',sans-serif">🎂 Tanggal Lahir</label>
+              <input id="id-tanggal" type="date"
+                value="${(()=>{try{return localStorage.getItem('ipas_id_tanggal')||'';}catch(e){return '';}})()}"
+                oninput="localStorage.setItem('ipas_id_tanggal',this.value)"
+                style="width:100%;background:rgba(255,255,255,.18);border:2.5px solid rgba(255,255,255,.3);border-radius:14px;padding:13px 16px;font-size:15px;color:#fff;font-family:'Poppins',sans-serif;font-weight:700;outline:none;box-sizing:border-box;transition:border-color .2s,box-shadow .2s;color-scheme:dark"
+                onfocus="this.style.borderColor='#f9c846';this.style.boxShadow='0 0 0 4px rgba(249,200,70,.2)'"
+                onblur="this.style.borderColor='rgba(255,255,255,.3)';this.style.boxShadow='none'"
+              />
+            </div>
+          </div>
+          <!-- completion indicator -->
+          <div id="identity-status" style="margin-top:14px;padding:10px 14px;border-radius:12px;background:rgba(255,255,255,.08);font-size:14px;font-weight:700;color:rgba(255,255,255,.6);font-family:'Poppins',sans-serif;text-align:center"></div>
+        </div>
+        <!-- chapter quick nav -->
+        <div class="fade-up a6">
+          <p style="color:rgba(255,255,255,.5);font-size:15px;margin-bottom:10px;font-weight:700;letter-spacing:1.5px">LANGSUNG KE SUB BAB</p>
+          <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px">
+            ${CHAPTERS.map((ch,i)=>`
+              <button class="btn-press" onclick="goTo('chapter',{chIdx:${i},pageIdx:0})"
+                style="background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.18);border-radius:14px;padding:10px 4px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px">
+                <span style="font-size:20px">${ch.icon}</span>
+                <span style="color:rgba(255,255,255,.75);font-size:15px;font-weight:800;font-family:'Poppins',sans-serif">Sub Bab ${ch.id}</span>
+              </button>`).join('')}
+          </div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function renderCover(){
+  return `
+    <div style="min-height:100vh;background:linear-gradient(160deg,#0f3d22 0%,#1a5c35 60%,#2d8a52 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:30px 24px;position:relative;overflow:hidden">
+      <div style="position:absolute;top:-40px;right:-40px;width:200px;height:200px;color:#6fcf97;opacity:.1">${SVG.flower}</div>
+      <div style="position:absolute;bottom:-30px;left:-20px;width:160px;height:160px;color:#6fcf97;opacity:.1;transform:rotate(20deg)">${SVG.leaf1}</div>
+      <div style="max-width:480px;width:100%;position:relative;z-index:1">
+        <div class="fade-in" style="background:rgba(255,255,255,.08);border:2px solid rgba(255,255,255,.15);border-radius:24px;padding:32px 28px;backdrop-filter:blur(14px);text-align:center">
+          <div style="display:inline-flex;background:rgba(249,200,70,.2);border:2px solid rgba(249,200,70,.4);border-radius:22px;padding:5px 18px;margin-bottom:22px">
+            <span style="color:#f9c846;font-size:15px;font-weight:800;letter-spacing:1.5px;font-family:'Poppins',sans-serif">🌿 BAHAN AJAR INOVATIF · IPAS</span>
+          </div>
+          <div style="font-size:56px;margin-bottom:8px" class="bounce-anim">🌍</div>
+          <h1 style="font-family:'Poppins',sans-serif;font-size:clamp(28px,6vw,40px);color:#fff;margin-bottom:8px;line-height:1.2">Interaksi Sosial</h1>
+          <p style="color:rgba(255,255,255,.75);font-size:15px;margin-bottom:24px;font-weight:700">di Lingkungan Sekolah dan Masyarakat</p>
+          <div style="display:flex;justify-content:center;gap:8px;margin-bottom:24px">
+            ${CHAPTERS.map(ch=>`<div class="hover-lift" style="width:42px;height:42px;border-radius:12px;background:${ch.color}90;display:flex;align-items:center;justify-content:center;font-size:20px;border:2px solid rgba(255,255,255,.2)">${ch.icon}</div>`).join('')}
+          </div>
+          <div style="border-top:2px solid rgba(255,255,255,.12);padding-top:20px;margin-bottom:18px">
+            <p style="color:rgba(255,255,255,.45);font-size:15px;margin-bottom:6px;font-weight:700">Penulis</p>
+            <p style="color:#fff;font-weight:800;font-size:19px;font-family:'Poppins',sans-serif">Muhammad Fajar Wibowo</p>
+            <p style="color:rgba(255,255,255,.5);font-size:15px;margin-top:4px;font-weight:600">Kelas IV · Semester I · 2026</p>
+          </div>
+          <!-- petunjuk penggunaan -->
+          <div style="background:rgba(249,200,70,.12);border:2px solid rgba(249,200,70,.3);border-radius:18px;padding:16px 18px;margin-bottom:18px;text-align:left">
+            <p style="color:#f9c846;font-size:15px;font-weight:800;margin-bottom:12px;font-family:'Poppins',sans-serif">📌 Petunjuk Penggunaan</p>
+            ${[
+              ['1️⃣','Isi identitas siswa di halaman Beranda terlebih dahulu.'],
+              ['2️⃣','Baca materi tiap Sub Bab secara urut dari Sub Bab 1 sampai 5.'],
+              ['3️⃣','Setelah membaca, kerjakan LKPD yang sesuai dengan materi.'],
+              ['4️⃣','Klik "Cek Jawaban" untuk melihat hasil pada soal pilihan.'],
+              ['5️⃣','Jawaban tersimpan otomatis, aman jika halaman ditutup.'],
+            ].map(([num,txt])=>`
+              <div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:9px">
+                <span style="font-size:18px;flex-shrink:0">${num}</span>
+                <span style="color:rgba(255,255,255,.9);font-size:14.5px;font-weight:600;line-height:1.65">${txt}</span>
+              </div>`).join('')}
+          </div>
+          <!-- Capaian Pembelajaran -->
+          <div style="background:rgba(92,199,100,.15);border:2px solid rgba(92,199,100,.4);border-radius:18px;padding:16px 18px;margin-bottom:16px;text-align:left">
+            <p style="color:#6fcf97;font-size:15px;font-weight:800;margin-bottom:12px;font-family:'Poppins',sans-serif">📗 CAPAIAN PEMBELAJARAN</p>
+            <p style="color:rgba(255,255,255,.75);font-size:14px;font-weight:600;margin-bottom:10px;line-height:1.65">Peserta didik mampu memahami dan menerapkan konsep interaksi sosial dalam kehidupan di lingkungan sekolah dan masyarakat sesuai nilai-nilai Pancasila.</p>
+            <div style="height:1.5px;background:rgba(111,207,151,.25);margin:10px 0"></div>
+            <p style="color:#6fcf97;font-size:14px;font-weight:800;margin-bottom:8px;font-family:'Poppins',sans-serif">🔑 Kata Kunci</p>
+            <div style="display:flex;flex-wrap:wrap;gap:6px">
+              ${['Interaksi Sosial','Kerja Sama','Gotong Royong','Norma','Musyawarah','Hak & Kewajiban','Toleransi'].map(k=>`
+                <span style="background:rgba(111,207,151,.2);border:1.5px solid rgba(111,207,151,.4);border-radius:20px;padding:5px 14px;font-size:14px;color:#fff;font-weight:700">${k}</span>`).join('')}
+            </div>
+          </div>
+          <!-- Tujuan Pembelajaran -->
+          <div style="background:linear-gradient(135deg,rgba(249,200,70,.18),rgba(232,145,61,.15));border-radius:18px;padding:16px;margin-bottom:16px;text-align:left;border:2px solid rgba(249,200,70,.35)">
+            <p style="color:#f9c846;font-size:15px;font-weight:800;letter-spacing:1.2px;margin-bottom:12px;font-family:'Poppins',sans-serif">🎯 TUJUAN PEMBELAJARAN</p>
+            <p style="color:rgba(255,255,255,.6);font-size:15px;font-weight:700;margin-bottom:10px;font-style:italic">Setelah mempelajari bab ini, peserta didik diharapkan mampu:</p>
+            ${[
+              ['🤝','Menjelaskan pengertian interaksi sosial serta syarat dan bentuk-bentuknya dalam kehidupan sehari-hari.'],
+              ['🏫','Mengidentifikasi peran, hak, dan kewajiban setiap warga sekolah dan masyarakat.'],
+              ['📋','Menyebutkan dan membedakan berbagai norma yang berlaku di lingkungan sekolah dan masyarakat.'],
+              ['✨','Menerapkan interaksi sosial yang positif melalui sikap gotong royong, toleransi, dan musyawarah.'],
+            ].map(([ic,txt],i)=>`
+              <div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:${i<3?'9':'0'}px">
+                <div style="width:28px;height:28px;border-radius:9px;background:rgba(249,200,70,.25);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;border:1.5px solid rgba(249,200,70,.4)">${ic}</div>
+                <span style="color:rgba(255,255,255,.85);font-size:14px;line-height:1.65;font-weight:600;padding-top:4px">${txt}</span>
+              </div>`).join('')}
+          </div>
+          <!-- Daftar Isi -->
+          <div style="background:rgba(255,255,255,.07);border-radius:16px;padding:16px;margin-bottom:16px;text-align:left;border:1px solid rgba(255,255,255,.1)">
+            <p style="color:rgba(255,255,255,.5);font-size:15px;font-weight:800;letter-spacing:1.2px;margin-bottom:10px;font-family:'Poppins',sans-serif">📋 DAFTAR ISI</p>
+            ${CHAPTERS.map((ch,i)=>`
+              <button class="btn-press" onclick="goTo('chapter',{chIdx:${i},pageIdx:0})"
+                style="width:100%;background:transparent;border:none;display:flex;align-items:center;gap:10px;padding:8px 10px;cursor:pointer;border-radius:12px;margin-bottom:2px;transition:background .2s"
+                onmouseover="this.style.background='rgba(255,255,255,.08)'" onmouseout="this.style.background='transparent'">
+                <div style="width:30px;height:30px;border-radius:9px;background:${ch.color}60;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0">${ch.icon}</div>
+                <span style="flex:1;color:rgba(255,255,255,.85);font-size:14.5px;font-weight:700;text-align:left">Sub Bab ${ch.id} – ${ch.title}</span>
+                <span style="color:rgba(255,255,255,.35);font-size:14.5px">→</span>
+              </button>`).join('')}
+            <div style="height:2px;background:rgba(255,255,255,.08);margin:8px 0;border-radius:2px"></div>
+            ${LKPD_ACTIVITIES.map((a,i)=>`
+              <button class="btn-press" onclick="goTo('lkpd-activity',{idx:${i}})"
+                style="width:100%;background:transparent;border:none;display:flex;align-items:center;gap:10px;padding:8px 10px;cursor:pointer;border-radius:12px;margin-bottom:2px;transition:background .2s"
+                onmouseover="this.style.background='rgba(255,255,255,.08)'" onmouseout="this.style.background='transparent'">
+                <div style="width:30px;height:30px;border-radius:9px;background:${a.color}50;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0">${a.icon}</div>
+                <span style="flex:1;color:rgba(255,255,255,.65);font-size:14.5px;font-weight:700;text-align:left">LKPD ${i+1} – ${a.title}</span>
+                <span style="color:rgba(255,255,255,.3);font-size:14.5px">→</span>
+              </button>`).join('')}
+          </div>
+          <!-- Panduan Penilaian -->
+          <div style="background:rgba(93,168,226,.15);border:2px solid rgba(93,168,226,.4);border-radius:18px;padding:16px 18px;margin-bottom:16px;text-align:left">
+            <p style="color:#7dd3fc;font-size:15px;font-weight:800;margin-bottom:12px;font-family:'Poppins',sans-serif">📊 PANDUAN PENILAIAN</p>
+            <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px">
+              ${[
+                ['LKPD 1–4','Essay & Isian','Kebijaksanaan Guru','Dinilai berdasarkan kelengkapan dan kesesuaian jawaban'],
+                ['LKPD 3','Cocokkan Norma','4 soal × 25 = 100','Jawaban otomatis dicek oleh sistem'],
+                ['LKPD 5','Setuju/Tidak','8 soal × 12,5 = 100','Jawaban otomatis dicek oleh sistem'],
+              ].map(([lkpd,tipe,skor,ket])=>`
+                <div style="background:rgba(255,255,255,.08);border-radius:12px;padding:11px 14px;border:1px solid rgba(255,255,255,.12)">
+                  <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
+                    <span style="color:#7dd3fc;font-size:14px;font-weight:800;font-family:'Poppins',sans-serif">${lkpd} · ${tipe}</span>
+                    <span style="background:rgba(249,200,70,.25);color:#f9c846;border-radius:8px;padding:3px 10px;font-size:14px;font-weight:800">${skor}</span>
+                  </div>
+                  <span style="color:rgba(255,255,255,.65);font-size:14px;font-weight:600">${ket}</span>
+                </div>`).join('')}
+            </div>
+            <div style="background:rgba(249,200,70,.12);border-radius:12px;padding:11px 14px;border:1px solid rgba(249,200,70,.25)">
+              <p style="color:#f9c846;font-size:14px;font-weight:800;margin-bottom:8px;font-family:'Poppins',sans-serif">🏅 Rentang Nilai</p>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+                ${[['90–100','A – Sangat Baik','#6fcf97'],['75–89','B – Baik','#7dd3fc'],['60–74','C – Cukup','#f9c846'],['< 60','D – Perlu Bimbingan','#f26b6b']].map(([r,l,c])=>`
+                  <div style="display:flex;align-items:center;gap:8px;background:rgba(255,255,255,.06);border-radius:9px;padding:8px 10px">
+                    <span style="color:${c};font-weight:800;font-size:14px;min-width:44px">${r}</span>
+                    <span style="color:rgba(255,255,255,.8);font-size:14px;font-weight:600;line-height:1.3">${l}</span>
+                  </div>`).join('')}
+              </div>
+            </div>
+          </div>
+          <!-- Nav buttons -->
+          <div style="display:flex;gap:10px">
+            <button class="btn-press" onclick="goTo('home')"
+              style="flex:1;background:rgba(255,255,255,.12);color:rgba(255,255,255,.8);border:2px solid rgba(255,255,255,.2);border-radius:14px;padding:13px;cursor:pointer;font-weight:800;font-size:14.5px;font-family:'Poppins',sans-serif">
+              ← Beranda
+            </button>
+            <button class="btn-press" onclick="goTo('chapter',{chIdx:0,pageIdx:0})"
+              style="flex:2;background:linear-gradient(135deg,#f9c846,#e8913d);color:#1d3c2a;border:none;border-radius:14px;padding:13px;cursor:pointer;font-weight:800;font-size:14px;font-family:'Poppins',sans-serif;box-shadow:0 4px 18px rgba(249,200,70,.45)">
+              🌱 Mulai Sub Bab 1 →
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>`;
+}
+
+function renderChapter(){
+  const chIdx=state.params.chIdx||0;
+  const pageIdx=state.params.pageIdx||0;
+  const ch=CHAPTERS[chIdx];
+  const page=ch.pages[pageIdx];
+  const totalPages=ch.pages.length;
+  const isLast=pageIdx===totalPages-1;
+  if(isLast){state.readSet.add(chIdx);lsSave();}
+  const pct=Math.round(((chIdx*2+pageIdx+1)/(CHAPTERS.length*2))*100);
+  const nextBg=isLast&&chIdx===CHAPTERS.length-1?'linear-gradient(135deg,#2d8a52,#1a5c35)':ch.color;
+  const nextLabel=isLast?(chIdx<CHAPTERS.length-1?`Sub Bab ${chIdx+2}: ${CHAPTERS[chIdx+1].icon} →`:'Kerjakan LKPD ✏️'):'Lanjut →';
+  return `
+    <div style="height:100vh;display:flex;flex-direction:column;background:#f4fdf7">
+      <!-- topbar -->
+      <div style="background:#fff;border-bottom:3px solid ${ch.color}50;padding:0 16px;display:flex;align-items:stretch;gap:0;flex-shrink:0;min-height:56px">
+        <button onclick="goTo('cover')" style="background:none;border:none;cursor:pointer;color:${ch.color};font-size:24px;padding:0 12px 0 4px;display:flex;align-items:center">←</button>
+        <div style="flex:1;display:flex;flex-direction:column;justify-content:center;overflow:hidden">
+          <div style="font-weight:800;color:#0f2d1a;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:'Poppins',sans-serif">
+            <span style="color:${ch.color}">Sub Bab ${ch.id}</span> · ${ch.title}
+          </div>
+          <div style="height:6px;background:#c8e6d4;border-radius:10px;margin-top:5px">
+            <div style="height:100%;width:${pct}%;background:linear-gradient(to right,${ch.color},${ch.color}bb);border-radius:10px;transition:width .4s"></div>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;padding:0 0 0 10px">
+          <div id="topbar-name" style="font-size:14px;color:#1f4d30;font-weight:700;max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;background:#e8f5ee;border-radius:10px;padding:4px 10px"></div>
+          <button class="btn-press" onclick="goTo('lkpd-home')"
+            style="background:${ch.color};color:#fff;border:none;border-radius:12px;padding:8px 16px;margin:9px 0;cursor:pointer;font-size:14px;font-weight:800;font-family:'Poppins',sans-serif;flex-shrink:0;box-shadow:0 3px 12px ${ch.color}50">
+            LKPD →
+          </button>
+        </div>
+      </div>
+      <!-- chapter tabs -->
+      <div style="background:#fff;border-bottom:3px solid #c8e6d4;padding:0 14px;display:flex;gap:2px;overflow-x:auto;flex-shrink:0">
+        ${CHAPTERS.map((c,i)=>`
+          <button class="btn-press" onclick="goTo('chapter',{chIdx:${i},pageIdx:0})"
+            style="background:none;border:none;border-bottom:4px solid ${i===chIdx?c.color:'transparent'};padding:11px 10px 9px;cursor:pointer;display:flex;align-items:center;gap:5px;flex-shrink:0;transition:border-color .2s;margin-bottom:-3px">
+            <span style="font-size:18px">${c.icon}</span>
+            <span style="font-size:14.5px;font-weight:800;color:${i===chIdx?c.color:'#1f4d30'};white-space:nowrap;font-family:'Poppins',sans-serif">Sub Bab ${c.id}</span>
+            ${state.readSet.has(i)?`<span style="font-size:14.5px">✅</span>`:''}
+          </button>`).join('')}
+      </div>
+      <!-- content -->
+      <div id="content-scroll" style="flex:1;overflow:auto;padding:18px 16px 28px">
+        <!-- page header card -->
+        <div class="fade-in" style="background:linear-gradient(135deg,${ch.color},${ch.color}cc);border-radius:22px;padding:22px;margin-bottom:20px;position:relative;overflow:hidden;box-shadow:0 6px 24px ${ch.color}50">
+          <div style="position:absolute;right:-20px;top:-20px;width:110px;height:110px;color:#fff;opacity:.08">${SVG.flower}</div>
+          <div style="position:absolute;left:-10px;bottom:-10px;width:80px;height:80px;color:#fff;opacity:.06">${SVG.leaf1}</div>
+          <div style="position:absolute;right:10px;bottom:5px;width:55px;opacity:.15">${[SVG.butterfly,SVG.bee,SVG.bird,SVG.frog,SVG.butterfly][chIdx%5]}</div>
+          <div style="display:flex;align-items:center;gap:14px;margin-bottom:12px">
+            <div style="width:54px;height:54px;border-radius:18px;background:rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-size:30px;flex-shrink:0;border:2px solid rgba(255,255,255,.3)">${ch.icon}</div>
+            <div>
+              <div style="font-size:15px;color:rgba(255,255,255,.8);font-weight:800;letter-spacing:1.5px;margin-bottom:4px;font-family:'Poppins',sans-serif">SUB BAB ${ch.id} · HALAMAN ${pageIdx+1}/${totalPages}</div>
+              <h2 style="font-family:'Poppins',sans-serif;font-size:21px;color:#fff;line-height:1.3;margin:0;text-shadow:0 2px 8px rgba(0,0,0,.2)">${page.title}</h2>
+            </div>
+          </div>
+          <div style="display:flex;gap:7px">
+            ${ch.pages.map((_,pi)=>`
+              <button onclick="goTo('chapter',{chIdx:${chIdx},pageIdx:${pi}})"
+                style="height:9px;border-radius:10px;background:${pi===pageIdx?'rgba(255,255,255,.95)':'rgba(255,255,255,.35)'};border:none;cursor:pointer;padding:0;transition:all .3s;width:${pi===pageIdx?28:9}px"></button>`).join('')}
+          </div>
+        </div>
+        <div class="fade-up">${page.blocks.map(b=>renderBlock(b)).join('')}</div>
+        <!-- mascot at bottom of content -->
+        <div style="margin:8px 0 16px">
+          ${mascotSay(
+            pageIdx===0
+              ? ['Halo! Aku Upi si Ulat 🌿 Yuk belajar bareng aku! Baca pelan-pelan ya!',
+                'Hai! Aku Koko si Katak! 🐸 Yuk pelajari materi ini bersama!',
+                'Semangat! Aku Beby si Lebah 🐝 siap menemanimu belajar hari ini!',
+                'Hei! Aku Biru si Burung 🐦 Mari terbang tinggi bersama ilmu!'][chIdx%4]
+              : ['Kamu hebat! Lanjutkan membaca pelan-pelan ya Bersama Upi! 🐛',
+                'Ayo terus! Koko percaya kamu bisa memahami semuanya! 🐸',
+                'Beby bangga padamu sudah membaca sampai sini! 🐝',
+                'Terbang tinggi! Kamu semakin dekat dengan selesai! 🐦'][chIdx%4],
+            ['caterpillar','frog','bee','bird'][chIdx%4],
+            ch.color
+          )}
+        </div>
+        <div style="display:flex;gap:10px;margin-top:12px">
+          <button class="btn-press" onclick="chapterNav('prev')"
+            style="flex:1;padding:15px;border-radius:18px;border:2.5px solid #c8e6d4;background:#fff;color:#0f2d1a;cursor:pointer;font-weight:800;font-size:14px;font-family:'Poppins',sans-serif">
+            ← Sebelumnya
+          </button>
+          <button class="btn-press" onclick="chapterNav('next')"
+            style="flex:2;padding:15px;border-radius:18px;border:none;background:${nextBg};color:#fff;cursor:pointer;font-weight:800;font-size:14px;font-family:'Poppins',sans-serif;box-shadow:0 5px 18px ${ch.color}55">
+            ${nextLabel}
+          </button>
+        </div>
+      </div>
+    </div>`;
+}
+
+function renderLkpdHome(){
+  const readCount=state.readSet.size;
+  const filledCount=LKPD_ACTIVITIES.filter(a=>Object.keys(state.lkpdAnswers[a.id]||{}).length>0).length;
+  return `
+    <div style="min-height:100vh;background:#f4fdf7;padding-bottom:40px">
+      <!-- header -->
+      <div style="background:linear-gradient(135deg,#0f3d22,#1a5c35,#2d8a52);padding:26px 20px 32px;position:relative;overflow:hidden">
+        <div style="position:absolute;right:-30px;top:-30px;width:160px;height:160px;color:#6fcf97;opacity:.1">${SVG.flower}</div>
+        <div style="position:absolute;left:-20px;bottom:-20px;width:120px;height:120px;color:#6fcf97;opacity:.08;transform:rotate(20deg)">${SVG.leaf1}</div>
+        <div style="position:absolute;top:10px;right:30px;width:80px;opacity:.15">${SVG.rainbow}</div>
+        <button onclick="goTo('home')" style="background:none;border:none;cursor:pointer;color:rgba(255,255,255,.9);font-size:14px;font-weight:800;font-family:'Poppins',sans-serif;margin-bottom:18px;display:flex;align-items:center;gap:6px;padding:0">
+          ← Beranda
+        </button>
+        <div style="display:flex;align-items:center;gap:16px;margin-bottom:18px">
+          <div style="width:56px;height:56px;border-radius:18px;background:rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;font-size:30px;border:2.5px solid rgba(255,255,255,.25)">✏️</div>
+          <div>
+            <h2 style="font-family:'Poppins',sans-serif;color:#fff;font-size:24px;margin:0;margin-bottom:4px;text-shadow:0 2px 8px rgba(0,0,0,.2)">LKPD Interaktif</h2>
+            <p style="color:rgba(255,255,255,.8);font-size:14px;margin:0;font-weight:700">Lembar Kerja Peserta Didik · IPAS Kelas IV</p>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+          <div style="background:rgba(255,255,255,.14);border-radius:18px;padding:16px;border:2px solid rgba(255,255,255,.15)">
+            <div style="color:rgba(255,255,255,.8);font-size:15px;font-weight:800;margin-bottom:5px;font-family:'Poppins',sans-serif">📖 MATERI DIBACA</div>
+            <div style="color:#fff;font-weight:800;font-size:28px;font-family:'Poppins',sans-serif;text-shadow:0 2px 8px rgba(0,0,0,.2)">${readCount}/${CHAPTERS.length}</div>
+            <div style="height:7px;background:rgba(255,255,255,.18);border-radius:10px;margin-top:10px">
+              <div style="height:100%;width:${(readCount/CHAPTERS.length)*100}%;background:linear-gradient(to right,#f9c846,#e8913d);border-radius:10px;transition:width .5s"></div>
+            </div>
+          </div>
+          <div style="background:rgba(255,255,255,.14);border-radius:18px;padding:16px;border:2px solid rgba(255,255,255,.15)">
+            <div style="color:rgba(255,255,255,.8);font-size:15px;font-weight:800;margin-bottom:5px;font-family:'Poppins',sans-serif">✅ KEGIATAN SELESAI</div>
+            <div style="color:#fff;font-weight:800;font-size:28px;font-family:'Poppins',sans-serif;text-shadow:0 2px 8px rgba(0,0,0,.2)">${filledCount}/${LKPD_ACTIVITIES.length}</div>
+            <div style="height:7px;background:rgba(255,255,255,.18);border-radius:10px;margin-top:10px">
+              <div style="height:100%;width:${(filledCount/LKPD_ACTIVITIES.length)*100}%;background:linear-gradient(to right,#6fcf97,#2d8a52);border-radius:10px;transition:width .5s"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+      ${readCount<CHAPTERS.length?`
+        <div style="margin:18px 16px 0;background:linear-gradient(to right,#fff3cc,#fde8c0);border-radius:18px;padding:16px 18px;border:2.5px solid #c97a0040;display:flex;align-items:center;gap:14px">
+          <span style="font-size:28px">📚</span>
+          <div style="flex:1">
+            <div style="font-weight:800;color:#0f2d1a;font-size:15px;font-family:'Poppins',sans-serif">Belum baca semua materi?</div>
+            <div style="color:#4a2d00;font-size:15px;font-weight:700;margin-top:2px">Baca dulu biar lebih mudah mengerjakan LKPD!</div>
+          </div>
+          <button class="btn-press" onclick="goTo('cover')"
+            style="background:#1a5c35;color:#fff;border:none;border-radius:12px;padding:10px 16px;cursor:pointer;font-size:14.5px;font-weight:800;font-family:'Poppins',sans-serif;flex-shrink:0;box-shadow:0 4px 12px rgba(26,92,53,.35)">
+            Buka →
+          </button>
+        </div>`:''}
+      <div style="padding:18px 16px 0">
+        <div style="font-weight:800;color:#0f2d1a;font-size:18px;margin-bottom:16px;font-family:'Poppins',sans-serif">🌿 Pilih Kegiatan LKPD:</div>
+        <div style="display:flex;flex-direction:column;gap:14px">
+          ${LKPD_ACTIVITIES.map((act,i)=>{
+            const filled=Object.keys(state.lkpdAnswers[act.id]||{}).length>0;
+            return `
+            <button class="btn-press hover-lift" onclick="goTo('lkpd-activity',{idx:${i}})"
+              style="background:#fff;border:2.5px solid ${filled?act.color+'70':'#c8e6d4'};border-radius:22px;padding:0;cursor:pointer;text-align:left;display:flex;overflow:hidden;box-shadow:0 4px 18px rgba(45,138,82,.1);font-family:'Poppins',sans-serif;width:100%">
+              <div style="width:78px;background:${act.color}18;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:18px 0;flex-shrink:0;border-right:2.5px solid ${filled?act.color+'50':'#c8e6d4'}">
+                <span style="font-size:32px;margin-bottom:6px">${act.icon}</span>
+                <span style="font-size:15px;color:${act.color};font-weight:800;font-family:'Poppins',sans-serif">${i+1}/${LKPD_ACTIVITIES.length}</span>
+              </div>
+              <div style="flex:1;padding:18px 16px;text-align:left">
+                <div style="font-weight:800;color:#0f2d1a;font-size:16px;margin-bottom:5px;font-family:'Poppins',sans-serif">${act.title}</div>
+                <div style="color:#1f4d30;font-size:15px;margin-bottom:12px;font-weight:700;line-height:1.5">${act.desc}</div>
+                <div>
+                  ${filled
+                    ?`<span style="background:#c8f0d8;color:#0f3d1f;border-radius:10px;padding:5px 13px;font-size:15px;font-weight:800;font-family:'Poppins',sans-serif;border:2px solid #2d8a5250">✅ Sudah dikerjakan</span>`
+                    :`<span style="background:${act.color}18;color:${act.color};border-radius:10px;padding:5px 13px;font-size:15px;font-weight:800;font-family:'Poppins',sans-serif;border:2px solid ${act.color}40">📝 Belum dikerjakan</span>`}
+                </div>
+              </div>
+              <div style="display:flex;align-items:center;padding:0 18px;color:${act.color};font-size:28px;font-weight:800">›</div>
+            </button>`;
+          }).join('')}
+        </div>
+      </div>
+    </div>`;
+}
+
+function renderLkpdActivityPage(){
+  const idx=state.params.idx||0;
+  const act=LKPD_ACTIVITIES[idx];
+  const isLast=idx===LKPD_ACTIVITIES.length-1;
+  return `
+    <div style="height:100vh;display:flex;flex-direction:column;background:#f4fdf7">
+      <!-- topbar -->
+      <div style="background:#fff;border-bottom:3px solid ${act.color}50;padding:0 16px;display:flex;align-items:stretch;gap:0;flex-shrink:0;min-height:56px">
+        <button onclick="goTo('lkpd-home')" style="background:none;border:none;cursor:pointer;color:${act.color};font-size:24px;padding:0 12px 0 4px;display:flex;align-items:center">←</button>
+        <div style="flex:1;display:flex;flex-direction:column;justify-content:center;overflow:hidden">
+          <div style="font-weight:800;color:#0f2d1a;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:'Poppins',sans-serif">
+            <span style="color:${act.color}">Kegiatan ${idx+1}</span> · ${act.title}
+          </div>
+          <div style="height:6px;background:#c8e6d4;border-radius:10px;margin-top:5px">
+            <div style="height:100%;width:${((idx+1)/LKPD_ACTIVITIES.length)*100}%;background:linear-gradient(to right,${act.color},${act.color}bb);border-radius:10px;transition:width .4s"></div>
+          </div>
+        </div>
+        <button class="btn-press" onclick="goTo('chapter',{chIdx:0,pageIdx:0})"
+          style="background:#1a5c35;color:#fff;border:none;border-radius:12px;padding:8px 16px;margin:9px 0 9px 12px;cursor:pointer;font-size:14.5px;font-weight:800;font-family:'Poppins',sans-serif;flex-shrink:0;box-shadow:0 3px 12px rgba(26,92,53,.35)">
+          📚 Materi
+        </button>
+      </div>
+      <!-- activity tabs -->
+      <div style="background:#fff;border-bottom:3px solid #c8e6d4;padding:0 14px;display:flex;gap:2px;overflow-x:auto;flex-shrink:0">
+        ${LKPD_ACTIVITIES.map((a,i)=>`
+          <button class="btn-press" onclick="goTo('lkpd-activity',{idx:${i}})"
+            style="background:none;border:none;border-bottom:4px solid ${i===idx?a.color:'transparent'};padding:11px 10px 9px;cursor:pointer;display:flex;align-items:center;gap:5px;flex-shrink:0;transition:border-color .2s;margin-bottom:-3px">
+            <span style="font-size:18px">${a.icon}</span>
+            <span style="font-size:14.5px;font-weight:800;color:${i===idx?a.color:'#1f4d30'};font-family:'Poppins',sans-serif">${i+1}</span>
+          </button>`).join('')}
+      </div>
+      <!-- content -->
+      <div id="content-scroll" style="flex:1;overflow:auto;padding:18px 16px 28px">
+        <!-- activity header -->
+        <div class="fade-in" style="background:linear-gradient(135deg,${act.color},${act.color}cc);border-radius:22px;padding:20px 22px;margin-bottom:18px;display:flex;align-items:center;gap:16px;position:relative;overflow:hidden;box-shadow:0 6px 24px ${act.color}50">
+          <div style="position:absolute;right:-15px;top:-15px;width:90px;height:90px;color:#fff;opacity:.1">${SVG.flower}</div>
+          <div style="position:absolute;right:12px;bottom:4px;width:50px;opacity:.2">${[SVG.butterfly,SVG.bee,SVG.bird,SVG.frog,SVG.caterpillar][idx%5]}</div>
+          <div style="width:58px;height:58px;border-radius:18px;background:rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-size:32px;flex-shrink:0;border:2px solid rgba(255,255,255,.3)">${act.icon}</div>
+          <div>
+            <div style="font-size:15px;color:rgba(255,255,255,.85);font-weight:800;letter-spacing:1.5px;margin-bottom:4px;font-family:'Poppins',sans-serif">KEGIATAN ${idx+1}</div>
+            <h2 style="font-family:'Poppins',sans-serif;font-size:21px;color:#fff;margin:0;line-height:1.3;text-shadow:0 2px 8px rgba(0,0,0,.2)">${act.title}</h2>
+            <p style="color:rgba(255,255,255,.85);font-size:15px;margin:5px 0 0;font-weight:700">${act.desc}</p>
+          </div>
+        </div>
+        <!-- hint -->
+        <div style="background:linear-gradient(to right,#cceeff,#edfaf3);border-radius:16px;padding:14px 18px;margin-bottom:18px;display:flex;gap:12px;align-items:flex-start;border:2.5px solid #0e90c050">
+          <span style="font-size:22px">💡</span>
+          <span style="font-size:14px;color:#073d5c;line-height:1.7;font-weight:800">Buka bahan ajar terlebih dahulu jika belum yakin dengan jawabanmu. Klik tombol <b style="color:#0f3d1f">"Materi"</b> di pojok kanan atas!</span>
+        </div>
+        <div class="fade-up">${renderLkpdActivity(act)}</div>
+        <!-- mascot encouragement -->
+        <div style="margin:16px 0 8px">
+          ${mascotSay(
+            idx===0 ? 'Jawab dengan jujur ya! Tidak ada jawaban yang salah selama kamu berpikir sendiri 😊' :
+            idx===1 ? 'Ingat-ingat kembali pelajaran tadi! Kamu pasti bisa mengisi tabelnya 📝' :
+            idx===2 ? 'Cocokkan dengan teliti ya! Baca setiap pilihan sebelum menjawab 🔍' :
+            idx===3 ? 'Bayangkan kamu ada di situasi itu! Apa yang akan kamu lakukan? 💭' :
+            'Ini soal terakhir! Kerjakan dengan sungguh-sungguh, kamu sudah hampir selesai! 🏆',
+            ['bee','caterpillar','frog','bird','caterpillar'][idx%5],
+            act.color
+          )}
+        </div>
+        <div style="display:flex;gap:10px;margin-top:18px">
+          ${idx>0?`
+            <button class="btn-press" onclick="goTo('lkpd-activity',{idx:${idx-1}})"
+              style="flex:1;padding:15px;border-radius:18px;border:2.5px solid #c8e6d4;background:#fff;color:#0f2d1a;cursor:pointer;font-weight:800;font-size:14px;font-family:'Poppins',sans-serif">
+              ← Sebelumnya
+            </button>`:''}
+          ${!isLast?`
+            <button class="btn-press" onclick="goTo('lkpd-activity',{idx:${idx+1}})"
+              style="flex:2;padding:15px;border-radius:18px;border:none;background:${act.color};color:#fff;cursor:pointer;font-weight:800;font-size:14px;font-family:'Poppins',sans-serif;box-shadow:0 5px 18px ${act.color}55">
+              Kegiatan ${idx+2} →
+            </button>`:`
+            <button class="btn-press" onclick="goTo('finish')"
+              style="flex:2;padding:15px;border-radius:18px;border:none;background:linear-gradient(135deg,#2d8a52,#1a5c35);color:#fff;cursor:pointer;font-weight:800;font-size:15px;font-family:'Poppins',sans-serif;box-shadow:0 5px 20px rgba(45,138,82,.55)">
+              🎉 Selesai!
+            </button>`}
+        </div>
+      </div>
+    </div>`;
+}
+
+function renderFinish(){
+  const filled=LKPD_ACTIVITIES.filter(a=>Object.keys(state.lkpdAnswers[a.id]||{}).length>0).length;
+  const unfilledList=LKPD_ACTIVITIES.filter(a=>Object.keys(state.lkpdAnswers[a.id]||{}).length===0);
+  const allDone=unfilledList.length===0;
+  const pct=Math.round((filled/LKPD_ACTIVITIES.length)*100);
+  const readPct=Math.round((state.readSet.size/CHAPTERS.length)*100);
+  return `
+    <div style="min-height:100vh;background:linear-gradient(160deg,#0f3d22 0%,#1a5c35 50%,#2d8a52 100%);display:flex;align-items:center;justify-content:center;padding:28px 24px;position:relative;overflow:hidden">
+      <div style="position:absolute;top:-40px;left:-40px;width:200px;height:200px;color:#6fcf97;opacity:.1">${SVG.tree}</div>
+      <div style="position:absolute;bottom:-30px;right:-30px;width:180px;height:180px;color:#6fcf97;opacity:.1;transform:scaleX(-1)">${SVG.tree}</div>
+      <div class="float" style="position:absolute;top:30px;right:60px;width:60px;height:60px;color:#f9c846;opacity:.25">${SVG.sun}</div>
+      <div class="sway" style="position:absolute;bottom:80px;left:30px;width:50px;height:50px;color:#a8f0c6;opacity:.3">${SVG.leaf1}</div>
+      <div class="sway" style="position:absolute;top:80px;left:20px;width:40px;height:40px;color:#f9c846;opacity:.25;animation-delay:1s">${SVG.butterfly}</div>
+      <div style="max-width:460px;width:100%;text-align:center;position:relative;z-index:1">
+        <div class="bounce-anim" style="font-size:80px;margin-bottom:16px">${allDone?'🏆':'📝'}</div>
+        <h1 class="fade-up a1" style="font-family:'Poppins',sans-serif;color:#fff;font-size:36px;margin-bottom:12px;text-shadow:0 3px 20px rgba(0,0,0,.3)">${allDone?'Selamat, Kamu Hebat!':'Hampir Selesai!'}</h1>
+        <p class="fade-up a2" style="color:rgba(255,255,255,.95);font-size:16px;margin-bottom:30px;font-weight:700;line-height:1.7">${allDone?'Kamu telah menyelesaikan seluruh kegiatan<br>Bahan Ajar dan LKPD IPAS Kelas IV! 🌿':'Yuk selesaikan semua kegiatan LKPD<br>sebelum mencetak hasilmu! 💪'}</p>
+        <div class="fade-up a3" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:28px">
+          <div style="background:rgba(255,255,255,.14);border-radius:22px;padding:22px 14px;border:2.5px solid rgba(255,255,255,.2)">
+            ${progressRing(readPct,"#f9c846",68)}
+            <div style="color:#fff;font-size:14px;font-weight:800;margin-top:12px;font-family:'Poppins',sans-serif">📖 Bab Dibaca</div>
+          </div>
+          <div style="background:rgba(255,255,255,.14);border-radius:22px;padding:22px 14px;border:2.5px solid rgba(255,255,255,.2)">
+            ${progressRing(pct,"#6fcf97",68)}
+            <div style="color:#fff;font-size:14px;font-weight:800;margin-top:12px;font-family:'Poppins',sans-serif">✅ LKPD Selesai</div>
+          </div>
+        </div>
+        <div class="fade-up a3" style="display:flex;justify-content:center;gap:10px;margin-bottom:28px">
+          ${Array.from({length:5},(_,i)=>`<span style="font-size:${pct>=(i+1)*20?"34":"26"}px;opacity:${pct>=(i+1)*20?"1":".3"};transition:all .4s;text-shadow:${pct>=(i+1)*20?"0 3px 12px rgba(249,200,70,.7)":"none"}">⭐</span>`).join("")}
+        </div>
+        <div class="fade-up a4" style="display:flex;flex-direction:column;gap:12px">
+          <button class="btn-press" onclick="goTo('lkpd-home')"
+            style="background:rgba(255,255,255,.18);color:#fff;border:2.5px solid rgba(255,255,255,.35);border-radius:18px;padding:16px;cursor:pointer;font-weight:800;font-size:15px;font-family:'Poppins',sans-serif">
+            📋 Lihat Semua LKPD
+          </button>
+          <!-- Print button with warning if not all filled -->
+          <div>
+            <button class="btn-press hover-lift" onclick="checkBeforePrint()"
+              style="width:100%;background:${allDone?'linear-gradient(135deg,#5bc4e8,#0e90c0)':'rgba(91,196,232,.35)'};color:#fff;border:${allDone?'none':'2px solid rgba(91,196,232,.5)'};border-radius:18px;padding:16px;cursor:pointer;font-weight:800;font-size:16px;font-family:'Poppins',sans-serif;box-shadow:${allDone?'0 6px 24px rgba(14,144,192,.5)':'none'};display:flex;align-items:center;justify-content:center;gap:10px">
+              🖨️ Cetak / Simpan sebagai PDF
+            </button>
+            ${!allDone?`
+            <div style="margin-top:10px;background:rgba(249,200,70,.15);border:2px solid rgba(249,200,70,.4);border-radius:14px;padding:12px 16px;text-align:left">
+              <p style="color:#f9c846;font-size:14.5px;font-weight:800;margin-bottom:8px;font-family:'Poppins',sans-serif">⚠️ Kegiatan belum lengkap:</p>
+              ${unfilledList.map(a=>`
+                <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+                  <span style="font-size:18px">${a.icon}</span>
+                  <span style="color:rgba(255,255,255,.9);font-size:14px;font-weight:700">${a.title} belum dikerjakan</span>
+                  <button class="btn-press" onclick="goTo('lkpd-activity',{idx:${LKPD_ACTIVITIES.indexOf(a)}})"
+                    style="margin-left:auto;background:#f9c846;color:#0f2d1a;border:none;border-radius:9px;padding:5px 12px;font-size:14px;font-weight:800;cursor:pointer;font-family:'Poppins',sans-serif;flex-shrink:0">
+                    Kerjakan →
+                  </button>
+                </div>`).join('')}
+            </div>`:''}
+          </div>
+          <button class="btn-press" onclick="goTo('home')"
+            style="background:linear-gradient(135deg,#f9c846,#e8913d);color:#0f2d1a;border:none;border-radius:18px;padding:16px;cursor:pointer;font-weight:800;font-size:16px;font-family:'Poppins',sans-serif;box-shadow:0 6px 24px rgba(249,200,70,.5)">
+            🌿 Kembali ke Beranda
+          </button>
+          <button class="btn-press" onclick="showDeleteConfirm()"
+            style="background:transparent;color:rgba(255,255,255,.65);border:2px solid rgba(255,255,255,.22);border-radius:18px;padding:13px;cursor:pointer;font-weight:700;font-size:14.5px;font-family:'Poppins',sans-serif">
+            🗑️ Hapus semua jawaban
+          </button>
+          <div id="delete-confirm" style="display:none;background:rgba(201,48,48,.2);border:2.5px solid rgba(201,48,48,.5);border-radius:18px;padding:16px 18px;text-align:left">
+            <p style="color:#fff;font-size:14.5px;font-weight:700;margin-bottom:14px;line-height:1.6">⚠️ Yakin ingin menghapus semua jawaban?<br><span style="color:rgba(255,255,255,.65);font-size:14.5px">Data tidak bisa dikembalikan.</span></p>
+            <div style="display:flex;gap:10px">
+              <button class="btn-press" onclick="lsClear()"
+                style="flex:1;background:#c93030;color:#fff;border:none;border-radius:14px;padding:12px;cursor:pointer;font-weight:800;font-size:14px;font-family:'Poppins',sans-serif">Ya, Hapus</button>
+              <button class="btn-press" onclick="hideDeleteConfirm()"
+                style="flex:1;background:rgba(255,255,255,.18);color:#fff;border:2px solid rgba(255,255,255,.25);border-radius:14px;padding:12px;cursor:pointer;font-weight:800;font-size:14px;font-family:'Poppins',sans-serif">Batal</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+}
+
+// ── RENDER ──
+function render(){
+  const app=document.getElementById('app');
+  let html='';
+  if(state.page==='home') html=renderHome();
+  else if(state.page==='cover') html=renderCover();
+  else if(state.page==='chapter') html=renderChapter();
+  else if(state.page==='lkpd-home') html=renderLkpdHome();
+  else if(state.page==='lkpd-activity') html=renderLkpdActivityPage();
+  else if(state.page==='finish') html=renderFinish();
+  else html=renderHome();
+  app.innerHTML=html;
+  populateTopbarName();
+}
+
+// ── EVENT HANDLERS ──
+function toggleAccordion(bid,idx,scrollId){
+  state.accordionOpen[bid]=state.accordionOpen[bid]===idx?-1:idx;
+  const sc=scrollId?document.getElementById(scrollId):null;
+  const top=sc?sc.scrollTop:0;
+  render();
+  setTimeout(()=>{const sc2=scrollId?document.getElementById(scrollId):null;if(sc2)sc2.scrollTop=top;},0);
+}
+function setTabActive(bid,idx,scrollId){
+  state.tabActive[bid]=idx;
+  const sc=scrollId?document.getElementById(scrollId):null;
+  const top=sc?sc.scrollTop:0;
+  render();
+  setTimeout(()=>{const sc2=scrollId?document.getElementById(scrollId):null;if(sc2)sc2.scrollTop=top;},0);
+}
+function saveAns(actId,key,val){
+  if(!state.lkpdAnswers[actId])state.lkpdAnswers[actId]={};
+  state.lkpdAnswers[actId][key]=val;
+  lsSave();
+}
+function setMatchingSel(actId,idx,letter){
+  if(!state.matchingSel[actId])state.matchingSel[actId]={};
+  state.matchingSel[actId][idx]=letter;
+  state.matchingChecked[actId]=false;
+  if(!state.lkpdAnswers[actId])state.lkpdAnswers[actId]={};
+  state.lkpdAnswers[actId]['__matching']={...state.matchingSel[actId]};
+  lsSave();
+  const sc=document.getElementById('content-scroll');
+  const top=sc?sc.scrollTop:0;
+  render();
+  setTimeout(()=>{const sc2=document.getElementById('content-scroll');if(sc2)sc2.scrollTop=top;},0);
+}
+function checkMatching(actId){
+  state.matchingChecked[actId]=true;
+  lsSave();
+  const sc=document.getElementById('content-scroll');
+  const top=sc?sc.scrollTop:0;
+  render();
+  setTimeout(()=>{const sc2=document.getElementById('content-scroll');if(sc2)sc2.scrollTop=top;},0);
+}
+function setEvalAns(actId,stmtId,val){
+  if(!state.lkpdAnswers[actId])state.lkpdAnswers[actId]={};
+  state.lkpdAnswers[actId][stmtId]=val;
+  state.evalChecked[actId]=false;
+  lsSave();
+  const sc=document.getElementById('content-scroll');
+  const top=sc?sc.scrollTop:0;
+  render();
+  setTimeout(()=>{const sc2=document.getElementById('content-scroll');if(sc2)sc2.scrollTop=top;},0);
+}
+function checkEval(actId){
+  state.evalChecked[actId]=true;
+  lsSave();
+  const sc=document.getElementById('content-scroll');
+  const top=sc?sc.scrollTop:0;
+  render();
+  setTimeout(()=>{const sc2=document.getElementById('content-scroll');if(sc2)sc2.scrollTop=top;},0);
+}
+function chapterNav(dir){
+  const chIdx=state.params.chIdx||0;
+  const pageIdx=state.params.pageIdx||0;
+  const ch=CHAPTERS[chIdx];
+  const isLast=pageIdx===ch.pages.length-1;
+  if(dir==='next'){
+    if(!isLast) goTo('chapter',{chIdx,pageIdx:pageIdx+1});
+    else if(chIdx<CHAPTERS.length-1) goTo('chapter',{chIdx:chIdx+1,pageIdx:0});
+    else goTo('lkpd-home');
+  } else {
+    if(pageIdx>0) goTo('chapter',{chIdx,pageIdx:pageIdx-1});
+    else if(chIdx>0) goTo('chapter',{chIdx:chIdx-1,pageIdx:CHAPTERS[chIdx-1].pages.length-1});
+    else goTo('cover');
+  }
+}
+
+
+// ── POPULATE STUDENT NAME IN TOPBAR ──
+function populateTopbarName(){
+  // Update topbar name chip
+  const el = document.getElementById('topbar-name');
+  if(el){
+    try {
+      const nama = localStorage.getItem('ipas_id_nama') || '';
+      el.textContent = nama ? '👤 ' + nama : '';
+      el.style.display = nama ? 'block' : 'none';
+    } catch(e){}
+  }
+  // Update identity completion status on home page
+  const status = document.getElementById('identity-status');
+  if(status){
+    try {
+      const nama  = localStorage.getItem('ipas_id_nama')||'';
+      const kelas = localStorage.getItem('ipas_id_kelas')||'';
+      const tgl   = localStorage.getItem('ipas_id_tanggal')||'';
+      const filled = [nama,kelas,tgl].filter(Boolean).length;
+      if(filled===3){
+        // Format tanggal lahir to readable
+        let tglStr = tgl;
+        try {
+          const d = new Date(tgl);
+          tglStr = d.toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'});
+        } catch(e){}
+        status.innerHTML = `✅ <span style="color:#6fcf97">Identitas lengkap!</span> · ${nama} · Kelas ${kelas} · Lahir ${tglStr}`;
+        status.style.background = 'rgba(111,207,151,.15)';
+        status.style.border = '1.5px solid rgba(111,207,151,.3)';
+        status.style.color = 'rgba(255,255,255,.85)';
+      } else {
+        const sisa = 3 - filled;
+        status.innerHTML = `⚠️ Masih ada <b style="color:#f9c846">${sisa} kolom</b> yang belum diisi`;
+        status.style.background = 'rgba(249,200,70,.1)';
+        status.style.border = '1.5px solid rgba(249,200,70,.25)';
+        status.style.color = 'rgba(255,255,255,.7)';
+      }
+    } catch(e){}
+  }
+}
+
+// ── CHECK BEFORE PRINT ──
+function checkBeforePrint(){
+  const unfilled = LKPD_ACTIVITIES.filter(a=>Object.keys(state.lkpdAnswers[a.id]||{}).length===0);
+  if(unfilled.length===0){
+    printPage();
+  } else {
+    // Already shown warning in UI, just scroll to it and flash
+    const btn = document.querySelector('[onclick="checkBeforePrint()"]');
+    if(btn){ btn.style.transform='scale(.96)'; setTimeout(()=>btn.style.transform='',200); }
+  }
+}
+
+// ── PRINT ──
+function printPage(){
+  // Show print instructions then trigger print
+  const nama = (() => { try { return localStorage.getItem('ipas_id_nama')||''; } catch(e){ return ''; } })();
+  const kelas = (() => { try { return localStorage.getItem('ipas_id_kelas')||''; } catch(e){ return ''; } })();
+  const tgl = (() => { try { return localStorage.getItem('ipas_id_tanggal')||''; } catch(e){ return ''; } })();
+
+  // Build a print-friendly window with all answers
+  const win = window.open('', '_blank');
+  if(!win){ alert('Aktifkan pop-up di browser untuk mencetak.'); return; }
+
+  const ans = state.lkpdAnswers;
+  let body = `
+    <div style="font-family:'Poppins',Arial,sans-serif;max-width:700px;margin:0 auto;padding:32px;color:#0f2d1a">
+      <div style="text-align:center;margin-bottom:28px;border-bottom:3px solid #2d8a52;padding-bottom:20px">
+        <div style="font-size:32px;margin-bottom:8px">🌿</div>
+        <h1 style="font-size:22px;color:#1a5c35;margin:0 0 6px">LEMBAR KERJA PESERTA DIDIK</h1>
+        <h2 style="font-size:17px;color:#2d8a52;font-weight:700;margin:0 0 4px">Interaksi Sosial di Lingkungan Sekolah dan Masyarakat</h2>
+        <p style="font-size:14px;color:#5e8872;margin:0">IPAS Kelas IV · Kurikulum Merdeka</p>
+      </div>
+      <table style="width:100%;border-collapse:collapse;margin-bottom:28px;font-size:14px">
+        <tr><td style="padding:7px 12px;border:1.5px solid #c8e6d4;width:160px;font-weight:700;background:#edfaf3">👤 Nama Siswa</td><td style="padding:7px 12px;border:1.5px solid #c8e6d4;font-weight:600">${nama || '____________________________'}</td></tr>
+        <tr><td style="padding:7px 12px;border:1.5px solid #c8e6d4;font-weight:700;background:#edfaf3">🏫 Kelas</td><td style="padding:7px 12px;border:1.5px solid #c8e6d4;font-weight:600">${kelas || '____________________________'}</td></tr>
+        <tr><td style="padding:7px 12px;border:1.5px solid #c8e6d4;font-weight:700;background:#edfaf3">📅 Tanggal Lahir</td><td style="padding:7px 12px;border:1.5px solid #c8e6d4;font-weight:600">${tgl ? (()=>{try{const d=new Date(tgl);return d.toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'});}catch(e){return tgl;}})() : '____________________________'}</td></tr>
+      </table>`;
+
+  // LKPD 1 - Essay
+  body += `<div style="margin-bottom:28px;page-break-inside:avoid">
+    <h3 style="background:#2d8a52;color:#fff;padding:10px 16px;border-radius:10px;font-size:15px;margin:0 0 14px">🤝 Kegiatan 1 – Aku dan Interaksi Sosialku</h3>`;
+  LKPD_ACTIVITIES[0].questions.forEach(q=>{
+    const a = (ans['L1']||{})[q.id]||'';
+    body += `<div style="margin-bottom:14px">
+      <p style="font-weight:700;font-size:14px;margin:0 0 6px;color:#1a5c35">${q.num}. ${q.text}</p>
+      <div style="border:1.5px solid #c8e6d4;border-radius:8px;padding:10px 14px;min-height:60px;font-size:14px;background:#f4fdf7;color:#0f2d1a;line-height:1.7">${a||'<span style="color:#aaa">Belum dijawab</span>'}</div>
+    </div>`;
+  });
+  body += `</div>`;
+
+  // LKPD 2 - Table
+  body += `<div style="margin-bottom:28px;page-break-inside:avoid">
+    <h3 style="background:#5bc4e8;color:#fff;padding:10px 16px;border-radius:10px;font-size:15px;margin:0 0 14px">🏫 Kegiatan 2 – Peran dan Tanggung Jawabku</h3>
+    <table style="width:100%;border-collapse:collapse;font-size:14px;margin-bottom:12px">
+      <tr style="background:#5bc4e8;color:#fff"><td style="padding:9px 12px;border:1.5px solid #c8e6d4;font-weight:700">Warga Sekolah</td><td style="padding:9px 12px;border:1.5px solid #c8e6d4;font-weight:700">Peran/Tugas</td><td style="padding:9px 12px;border:1.5px solid #c8e6d4;font-weight:700">Tanggung Jawab</td></tr>`;
+  [['Siswa','siswa_peran','siswa_tanggung'],['Guru','guru_peran','guru_tanggung'],['Kepala Sekolah','kepsek_peran','kepsek_tanggung']].forEach(([r,k1,k2])=>{
+    body += `<tr><td style="padding:9px 12px;border:1.5px solid #c8e6d4;font-weight:700;background:#edfaf3">${r}</td><td style="padding:9px 12px;border:1.5px solid #c8e6d4;font-size:14px">${(ans['L2']||{})[k1]||'–'}</td><td style="padding:9px 12px;border:1.5px solid #c8e6d4;font-size:14px">${(ans['L2']||{})[k2]||'–'}</td></tr>`;
+  });
+  body += `</table></div>`;
+
+  // LKPD 3 - Rules
+  body += `<div style="margin-bottom:28px;page-break-inside:avoid">
+    <h3 style="background:#e8913d;color:#fff;padding:10px 16px;border-radius:10px;font-size:15px;margin:0 0 14px">📋 Kegiatan 3 – Aturan di Sekitarku</h3>
+    <p style="font-weight:700;font-size:14px;color:#1a5c35;margin:0 0 8px">A. Lima Peraturan di Sekolahku:</p>`;
+  ['r1','r2','r3','r4','r5'].forEach((k,i)=>{
+    body += `<p style="font-size:14px;margin:0 0 6px;padding:8px 12px;background:#fdf0e0;border-radius:8px;border-left:4px solid #e8913d"><b>${i+1}.</b> ${(ans['L3']||{})[k]||'____________________________'}</p>`;
+  });
+  const sel = state.matchingSel['L3']||{};
+  const pairs = LKPD_ACTIVITIES[2].matching.pairs;
+  body += `<p style="font-weight:700;font-size:14px;color:#1a5c35;margin:12px 0 8px">B. Cocokkan Norma:</p>
+    <table style="width:100%;border-collapse:collapse;font-size:14px">
+      <tr style="background:#e8913d;color:#fff"><td style="padding:8px 12px;border:1.5px solid #c8e6d4;font-weight:700">Norma</td><td style="padding:8px 12px;border:1.5px solid #c8e6d4;font-weight:700">Jawaban</td><td style="padding:8px 12px;border:1.5px solid #c8e6d4;font-weight:700">Benar/Salah</td></tr>`;
+  pairs.forEach((p,i)=>{
+    const ok = sel[i]===p.correct;
+    body += `<tr><td style="padding:8px 12px;border:1.5px solid #c8e6d4;font-weight:600">${p.norma}</td><td style="padding:8px 12px;border:1.5px solid #c8e6d4">${sel[i]||'–'}</td><td style="padding:8px 12px;border:1.5px solid #c8e6d4;color:${ok?'#2d8a52':'#c93030'};font-weight:700">${sel[i]?(ok?'✅ Benar':'❌ Salah'):'–'}</td></tr>`;
+  });
+  body += `</table></div>`;
+
+  // LKPD 4 - Scenario
+  body += `<div style="margin-bottom:28px;page-break-inside:avoid">
+    <h3 style="background:#8b5cf6;color:#fff;padding:10px 16px;border-radius:10px;font-size:15px;margin:0 0 14px">💡 Kegiatan 4 – Interaksi Sosial Positif</h3>`;
+  LKPD_ACTIVITIES[3].scenarios.forEach(s=>{
+    body += `<div style="margin-bottom:14px;border:1.5px solid #c8e6d4;border-radius:10px;overflow:hidden">
+      <div style="background:#8b5cf618;padding:10px 14px;border-left:4px solid #8b5cf6">
+        <b style="color:#8b5cf6;font-size:14px">${s.label}:</b> <span style="font-size:14px">${s.text}</span>
+      </div>
+      <div style="padding:10px 14px;font-size:14px">
+        <b style="color:#1a5c35">Jawaban:</b><br>
+        <span style="color:#0f2d1a;line-height:1.7">${(ans['L4']||{})[s.id]||'<span style="color:#aaa">Belum dijawab</span>'}</span>
+      </div>
+    </div>`;
+  });
+  body += `</div>`;
+
+  // LKPD 5 - Evaluation
+  const evalAns = ans['L5']||{};
+  const score = LKPD_ACTIVITIES[4].statements.filter(s=>evalAns[s.id]!==undefined&&evalAns[s.id]===s.ans).length;
+  body += `<div style="margin-bottom:28px;page-break-inside:avoid">
+    <h3 style="background:#f26b6b;color:#fff;padding:10px 16px;border-radius:10px;font-size:15px;margin:0 0 14px">🧠 Kegiatan 5 – Evaluasi & Refleksi</h3>
+    <p style="font-weight:700;font-size:14px;color:#1a5c35;margin:0 0 8px">A. Setuju / Tidak Setuju: <span style="color:#2d8a52">Skor ${score}/8</span></p>
+    <table style="width:100%;border-collapse:collapse;font-size:14px;margin-bottom:14px">
+      <tr style="background:#f26b6b;color:#fff"><td style="padding:8px 12px;border:1.5px solid #c8e6d4;font-weight:700">No</td><td style="padding:8px 12px;border:1.5px solid #c8e6d4;font-weight:700">Pernyataan</td><td style="padding:8px 12px;border:1.5px solid #c8e6d4;font-weight:700">Jawaban</td><td style="padding:8px 12px;border:1.5px solid #c8e6d4;font-weight:700">Hasil</td></tr>`;
+  LKPD_ACTIVITIES[4].statements.forEach((s,i)=>{
+    const uv = evalAns[s.id];
+    const ok = uv===s.ans;
+    body += `<tr style="background:${i%2===0?'#f4fdf7':'#fff'}"><td style="padding:8px 12px;border:1.5px solid #c8e6d4;text-align:center;font-weight:700">${i+1}</td><td style="padding:8px 12px;border:1.5px solid #c8e6d4">${s.text}</td><td style="padding:8px 12px;border:1.5px solid #c8e6d4;text-align:center">${uv===true?'Setuju':uv===false?'Tidak':'–'}</td><td style="padding:8px 12px;border:1.5px solid #c8e6d4;text-align:center;color:${ok?'#2d8a52':'#c93030'};font-weight:700">${uv!==undefined?(ok?'✅':'❌'):'–'}</td></tr>`;
+  });
+  body += `</table>
+    <p style="font-weight:700;font-size:14px;color:#1a5c35;margin:0 0 8px">B. Refleksi Diri:</p>`;
+  LKPD_ACTIVITIES[4].reflections.forEach(r=>{
+    body += `<div style="margin-bottom:12px">
+      <p style="font-weight:700;font-size:14px;margin:0 0 5px;color:#1a5c35">💭 ${r.q}</p>
+      <div style="border:1.5px solid #c8e6d4;border-radius:8px;padding:10px 14px;min-height:50px;font-size:14px;background:#fff8dc;color:#0f2d1a;line-height:1.7">${evalAns[r.id]||'<span style="color:#aaa">Belum diisi</span>'}</div>
+    </div>`;
+  });
+  body += `</div>`;
+
+  body += `<div style="text-align:center;margin-top:30px;padding-top:16px;border-top:2px solid #c8e6d4;color:#5e8872;font-size:14px">
+    Bahan Ajar IPAS Kelas IV · Muhammad Fajar Wibowo · Dicetak: ${new Date().toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'})}
+  </div></div>`;
+
+  win.document.write(`<!DOCTYPE html><html><head><meta charset="UTF-8"><title>LKPD IPAS - ${nama}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <style>*{box-sizing:border-box;}body{margin:0;background:#fff;}@media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact;}}</style>
+  </head><body>${body}</body></html>`);
+  win.document.close();
+  setTimeout(()=>win.print(), 800);
+}
+lsLoad();
+render();
+</script>
+</body>
+</html>

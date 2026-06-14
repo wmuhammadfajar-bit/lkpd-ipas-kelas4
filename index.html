@@ -2,7 +2,10 @@
 <html lang="id">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
 <title>Bahan Ajar IPAS – Interaksi Sosial</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -24,6 +27,13 @@ html,body{height:100%;font-family:'Poppins',sans-serif;background:var(--offwhite
 ::-webkit-scrollbar-track{background:#c8e6d4;}
 ::-webkit-scrollbar-thumb{background:var(--green-light);border-radius:10px;}
 textarea,input,select{font-family:'Poppins',sans-serif;}
+/* Mobile touch improvements */
+button{-webkit-tap-highlight-color:transparent;min-height:44px;}
+input,textarea,select{min-height:44px;font-size:16px!important;} /* 16px mencegah auto-zoom di iOS */
+@media(max-width:480px){
+  .nature-card{border-radius:14px!important;}
+  textarea{font-size:15px!important;}
+}
 
 /* Animations */
 @keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
@@ -374,6 +384,97 @@ const LKPD_ACTIVITIES = [
    ]},
 ];
 
+// ── KRITERIA PENILAIAN OTOMATIS UNTUK ESSAY / ISIAN / SKENARIO ──
+// min = jumlah karakter minimal agar jawaban dianggap "diisi dengan sungguh-sungguh"
+// kw  = kata kunci unik per soal; sinonim/variasi sudah disertakan
+// syn = [opsional] sinonim tambahan yang dianggap setara kata kunci
+const ANSWER_KEYWORDS = {
+  L1:{
+    // [PERBAIKAN 1] kw berbeda per soal + [PERBAIKAN 5] sinonim diperluas
+    q1:{min:30,kw:['interaksi','hubungan','timbal balik','mempengaruhi','pengaruh','saling','sosial','komunikasi','masyarakat','berhubungan']},
+    q2:{min:30,kw:['kontak sosial','komunikasi','kontak','langsung','tidak langsung','tatap muka','pesan','telepon','syarat','isyarat']},
+    q3:{min:35,kw:['teman','guru','sekolah','kelas','belajar','bermain','membantu','bekerja sama','kerja sama','tugas','kegiatan','main','cerita','pengalaman','bersama']},
+    q4:{min:25,kw:['makhluk sosial','membantu','bantu','tolong','menolong','sendiri','bekerja sama','kerja sama','membutuhkan','memerlukan','butuh','perlu','saling','hidup','bertahan']},
+  },
+  L2:{
+    // [PERBAIKAN 1] siswa_peran vs siswa_tanggung kini berbeda
+    siswa_peran:{min:15,kw:['belajar','tekun','rajin','aktif','partisipasi','ikut','hormat','bersih','tertib','disiplin','sungguh','giat','semangat']},
+    siswa_tanggung:{min:15,kw:['tugas','pr','piket','ujian','nilai','selesaikan','kumpul','tepat waktu','jujur','tidak mencontek','tanggung jawab','kewajiban','patuh']},
+    // [PERBAIKAN 1] guru_peran vs guru_tanggung kini berbeda
+    guru_peran:{min:15,kw:['mengajar','ajar','mendidik','didik','membimbing','bimbing','memberikan','ilmu','pelajaran','materi','menerangkan','mengasuh']},
+    guru_tanggung:{min:15,kw:['motivasi','disiplin','contoh','teladan','perilaku','komunikasi','orang tua','laporan','evaluasi','nilai','mendampingi','mendukung']},
+    // [PERBAIKAN 1] kepsek_peran vs kepsek_tanggung kini berbeda
+    kepsek_peran:{min:15,kw:['memimpin','pimpin','mengelola','kelola','mengatur','atur','sekolah','kebijakan','program','keputusan','koordinasi','mengawasi']},
+    kepsek_tanggung:{min:15,kw:['awasi','pengawasan','kemajuan','perkembangan','hubungan','masyarakat','tanggung jawab','laporan','mutu','kualitas','fasilitas','anggaran']},
+    // [PERBAIKAN 1] hak1-4 berbeda per baris: hak belajar, hak perlakuan adil, hak fasilitas, hak berpendapat
+    hak1:{min:10,kw:['belajar','ilmu','pengetahuan','pelajaran','diajar','mendapat','pengajaran','sekolah']},
+    hak2:{min:10,kw:['adil','perlakuan','sama','setara','tidak dibeda-bedakan','tidak diskriminasi','merata','fair']},
+    hak3:{min:10,kw:['fasilitas','sarana','prasarana','ruang','buku','perpustakaan','lapangan','alat','laboratorium']},
+    hak4:{min:10,kw:['pendapat','usul','saran','bicara','suara','aspirasi','ide','gagasan','berpendapat']},
+    // [PERBAIKAN 1] kw1-4 berbeda per baris: kewajiban waktu, kewajiban bersih, kewajiban hormat, kewajiban belajar
+    kw1:{min:10,kw:['tepat waktu','disiplin waktu','datang','hadir','tidak terlambat','on time','masuk','berangkat']},
+    kw2:{min:10,kw:['bersih','kebersihan','sampah','piket','rapih','rapi','lingkungan','menjaga','merawat']},
+    kw3:{min:10,kw:['hormat','menghormati','sopan','santun','salam','beri salam','menghargai','patuh','taat']},
+    kw4:{min:10,kw:['belajar','tugas','pr','mengerjakan','sungguh','tekun','rajin','jujur','tidak mencontek','ujian']},
+  },
+  L4:{
+    // [PERBAIKAN 5] sinonim diperluas per skenario
+    s1:{min:25,kw:['membantu','bantu','menolong','tolong','menjelaskan','jelaskan','ajari','ajar','bersama','sabar','mengajari','tunjukkan','dukung']},
+    s2:{min:25,kw:['mengajak','ajak','ikut','serta','gotong royong','kerja bakti','mengingatkan','ingatkan','bantu','menyapa','sapa','bergabung','bersama']},
+    s3:{min:25,kw:['musyawarah','diskusi','bicara','berbicara','mendengar','dengar','menghargai','hargai','toleransi','toleran','sabar','maaf','minta maaf','damai','kompromi']},
+    s4:{min:25,kw:['menyapa','sapa','ramah','berteman','teman','mengajak','ajak','kenalan','perkenalan','menyambut','sambut','baik hati','peduli','perhatian']},
+  },
+  // [PERBAIKAN 3] Refleksi diri L5 sekarang ikut dinilai
+  L5:{
+    rf1:{min:20,kw:['belajar','pelajari','tahu','mengetahui','memahami','paham','interaksi','sosial','norma','peraturan','aturan','kerja sama','gotong royong']},
+    rf2:{min:20,kw:['menarik','berkesan','suka','senang','tertarik','bagian','hal','materi','cerita','contoh','kegiatan','pengalaman']},
+    rf3:{min:20,kw:['sekolah','kelas','teman','guru','bantu','tolong','bersama','hormat','sapa','sopan','kerja sama','piket','belajar','disiplin']},
+    rf4:{min:20,kw:['masyarakat','lingkungan','tetangga','gotong royong','kerja bakti','membantu','sapa','hormat','rukun','peduli','bersih']},
+  },
+};
+
+// [PERBAIKAN 5] Normalisasi teks: ubah variasi imbuhan umum ke bentuk dasar
+function normalizeText(text){
+  return (text||'').trim().toLowerCase()
+    .replace(/me(ng|ny|m|n)?/g,'') // awalan me-
+    .replace(/ber/g,'')             // awalan ber-
+    .replace(/kan$|an$|i$/g,'')     // akhiran -kan, -an, -i (sederhana)
+    .replace(/\s+/g,' ');
+}
+// Cek apakah kata kunci cocok di teks asli ATAU teks ternormalisasi
+function kwMatch(text, kw){
+  const t = text.toLowerCase();
+  const tn = normalizeText(text);
+  const k = kw.toLowerCase();
+  const kn = normalizeText(kw);
+  return t.includes(k) || tn.includes(kn);
+}
+
+// Hitung status & pesan untuk satu jawaban isian, berdasarkan panjang minimal dan JUMLAH kata kunci
+function itemFeedback(text, rule){
+  if(!rule) return {pct:100, level:'good', msg:''};
+  const t=(text||'').trim();
+  if(t.length < rule.min) return {pct:0, level:'empty', msg:`❌ Belum diisi / masih terlalu singkat (minimal ${rule.min} karakter).`};
+  // [PERBAIKAN 5] Gunakan kwMatch untuk mendeteksi sinonim
+  const hitCount = rule.kw.filter(k=>kwMatch(t,k)).length;
+  const total = rule.kw.length;
+  // [PERBAIKAN 6] Skor bertingkat: 0 kw = 20 (bukan 40), lalu naik bertahap
+  if(hitCount === 0) return {pct:20, level:'weak',  msg:`🔶 Sudah diisi, tapi belum ada kata kunci penting. Perkaya jawabanmu! (0/${total} kata kunci)`};
+  const ratio = hitCount / total;
+  if(ratio < 0.34) return {pct:55, level:'check', msg:`🔸 Lumayan! Ada ${hitCount} kata kunci ditemukan. Coba tambah penjelasan lagi. (${hitCount}/${total})`};
+  if(ratio < 0.67) return {pct:80, level:'good',  msg:`🌿 Bagus! Jawabanmu sudah memuat beberapa poin penting. (${hitCount}/${total} kata kunci)`};
+  return                   {pct:100,level:'great', msg:`✅ Luar biasa! Jawabanmu sangat lengkap! (${hitCount}/${total} kata kunci)`};
+}
+function itemScore(text, rule){ return itemFeedback(text, rule).pct; }
+// Chip kecil di bawah tiap kotak isian, memberi tahu siswa apakah jawabannya sudah memadai
+function feedbackChip(actId, key, val){
+  const rule=(ANSWER_KEYWORDS[actId]||{})[key];
+  const fb=itemFeedback(val, rule);
+  const bg = fb.level==='great'?'#d4f0e0':fb.level==='good'?'#e8f5ee':fb.level==='check'?'#fff3cc':fb.level==='weak'?'#fff0d0':'#ffe3e3';
+  const cl = fb.level==='great'?'#1a5c35':fb.level==='good'?'#2d6e40':fb.level==='check'?'#7a4e00':fb.level==='weak'?'#8b4000':'#8b0000';
+  return `<div id="fb-${actId}-${key}" style="margin-top:6px;font-size:12.5px;font-weight:700;color:${cl};background:${bg};border-radius:8px;padding:5px 10px;display:inline-block;font-family:'Poppins',sans-serif">${fb.msg}</div>`;
+}
+
 // ── HELPERS ──
 const LS_KEY = 'ipas_lkpd_alam_v1';
 function lsSave(){try{localStorage.setItem(LS_KEY,JSON.stringify({lkpdAnswers:state.lkpdAnswers,readSet:Array.from(state.readSet),matchingSel:state.matchingSel,matchingChecked:state.matchingChecked,evalChecked:state.evalChecked}));}catch(e){}}
@@ -385,6 +486,76 @@ function lsClear(){try{localStorage.removeItem(LS_KEY);}catch(e){}state.lkpdAnsw
 function goTo(name,params={}){state.page=name;state.params=params;render();window.scrollTo(0,0);setTimeout(()=>{const sc=document.getElementById('content-scroll');if(sc)sc.scrollTop=0;},0);}
 function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
 function getAns(id){return state.lkpdAnswers[id]||{};}
+
+// ── SCORING FUNCTIONS ──
+function calcScore(actId){
+  const act = LKPD_ACTIVITIES.find(a=>a.id===actId);
+  if(!act) return {score:0,total:100,pct:0};
+  const ans = state.lkpdAnswers[actId]||{};
+  if(act.type==='essay'){
+    const scores = act.questions.map(q=>itemScore(ans[q.id], ANSWER_KEYWORDS.L1[q.id]));
+    const pct = Math.round(scores.reduce((a,b)=>a+b,0)/scores.length);
+    return {score:pct,total:100,pct};
+  }
+  if(act.type==='table-fill'){
+    const allKeys=[...act.tableRows.flatMap(r=>r.keys),...act.hakKeys,...act.kwjbKeys];
+    const scores = allKeys.map(k=>itemScore(ans[k], ANSWER_KEYWORDS.L2[k]));
+    const pct = Math.round(scores.reduce((a,b)=>a+b,0)/scores.length);
+    return {score:pct,total:100,pct};
+  }
+  if(act.type==='rules-matching'){
+    const sel=state.matchingSel[actId]||{};
+    const correct=act.matching.pairs.filter((p,i)=>sel[i]===p.correct).length;
+    const pct=Math.round((correct/act.matching.pairs.length)*100);
+    return {score:pct,total:100,pct};
+  }
+  if(act.type==='scenario'){
+    const scores = act.scenarios.map(s=>itemScore(ans[s.id], ANSWER_KEYWORDS.L4[s.id]));
+    const pct = Math.round(scores.reduce((a,b)=>a+b,0)/scores.length);
+    return {score:pct,total:100,pct};
+  }
+  if(act.type==='evaluation'){
+    // [PERBAIKAN 3] Gabungkan skor soal benar/salah (70%) + refleksi diri (30%)
+    const correct=act.statements.filter(s=>ans[s.id]!==undefined&&ans[s.id]===s.ans).length;
+    const evalPct=Math.round((correct/act.statements.length)*100);
+    const rfScores=act.reflections.map(r=>itemScore(ans[r.id], ANSWER_KEYWORDS.L5[r.id]));
+    const rfPct=Math.round(rfScores.reduce((a,b)=>a+b,0)/rfScores.length);
+    const pct=Math.round(evalPct*0.7 + rfPct*0.3);
+    return {score:pct,total:100,pct,evalPct,rfPct};
+  }
+  return {score:0,total:100,pct:0};
+}
+function calcAllScores(){ return LKPD_ACTIVITIES.map(a=>calcScore(a.id)); }
+// [PERBAIKAN 4] Bobot bertingkat: L1=20, L2=20, L3=15, L4=20, L5=25 (refleksi+evaluasi lebih berat)
+const LKPD_WEIGHTS = {L1:20, L2:20, L3:15, L4:20, L5:25};
+function calcRataRata(){
+  const scores=calcAllScores();
+  const totalW=LKPD_ACTIVITIES.reduce((s,a)=>s+(LKPD_WEIGHTS[a.id]||20),0);
+  return Math.round(scores.reduce((s,v,i)=>s+v.pct*(LKPD_WEIGHTS[LKPD_ACTIVITIES[i].id]||20),0)/totalW);
+}
+function scoreColor(pct){ if(pct>=90)return '#2d8a52'; if(pct>=75)return '#0e90c0'; if(pct>=60)return '#c97a00'; return '#c93030'; }
+function scoreLabel(pct){ if(pct>=90)return 'A – Sangat Baik 🌟'; if(pct>=75)return 'B – Baik 👍'; if(pct>=60)return 'C – Cukup 💪'; return 'D – Perlu Bimbingan 📖'; }
+function nilaiBadgeEl(actId, pct, c){
+  return `<div id="nilai-badge-${actId}" style="display:flex;align-items:center;gap:10px;background:${c}18;border:2.5px solid ${c}55;border-radius:16px;padding:10px 16px;margin-top:14px">
+    <div style="width:52px;height:52px;border-radius:50%;background:${c};display:flex;align-items:center;justify-content:center;flex-shrink:0;box-shadow:0 4px 14px ${c}55">
+      <span style="font-size:20px;font-weight:800;color:#fff;font-family:'Poppins',sans-serif">${pct}</span>
+    </div>
+    <div>
+      <div style="font-size:13px;color:#1f4d30;font-weight:700;margin-bottom:2px">📊 Nilai Kamu</div>
+      <div style="font-size:15px;font-weight:800;color:${c};font-family:'Poppins',sans-serif">${scoreLabel(pct)}</div>
+    </div>
+  </div>`;
+}
+function nilaiBadge(actId){
+  const pct=calcScore(actId).pct;
+  const c=scoreColor(pct);
+  return nilaiBadgeEl(actId,pct,c);
+}
+function updateLkpdHomeBadge(actId){
+  // Update score badge on lkpd-home if visible
+  const el=document.getElementById('home-score-'+actId);
+  if(el){ const sc=calcScore(actId); const c=scoreColor(sc.pct); el.textContent='📊 Nilai: '+sc.pct; el.style.color=c; el.style.background=c+'18'; el.style.borderColor=c+'40'; }
+}
 
 function progressRing(pct,color,size=56){
   const r=20,c=2*Math.PI*r,dash=c*pct/100;
@@ -592,7 +763,9 @@ function renderLkpdEssay(act){
             onfocus="this.style.borderColor='${act.color}'"
             onblur="this.style.borderColor='${act.color}40'"
             style="width:100%;border:2.5px solid ${act.color}40;border-radius:14px;padding:13px 15px;font-size:14.5px;resize:vertical;outline:none;line-height:1.75;background:#f4fdf7;transition:border-color .2s;box-sizing:border-box;color:#0f2d1a;font-family:'Poppins',sans-serif;font-weight:700">${esc(ans[q.id]||'')}</textarea>
+          ${feedbackChip(act.id,q.id,ans[q.id]||'')}
         </div>`).join('')}
+      ${nilaiBadge(act.id)}
     </div>`;
 }
 
@@ -612,26 +785,41 @@ function renderLkpdTableFill(act){
               <div style="padding:7px">
                 <textarea rows="2" placeholder="Isi di sini..." oninput="saveAns('${act.id}','${k}',this.value)"
                   style="width:100%;border:2px solid ${act.color}35;border-radius:10px;padding:8px 10px;font-size:15px;resize:none;outline:none;background:#fff;line-height:1.6;box-sizing:border-box;color:#0f2d1a;font-family:'Poppins',sans-serif;font-weight:700">${esc(ans[k]||'')}</textarea>
+                ${feedbackChip(act.id,k,ans[k]||'')}
               </div>`).join('')}
           </div>`).join('')}
       </div>
       <div style="font-weight:800;color:#0f2d1a;margin-bottom:12px;font-size:16px;font-family:'Poppins',sans-serif">🌻 B. Hak dan Kewajiban Saya sebagai Siswa</div>
+      <div style="background:linear-gradient(to right,#dff4fc,#edfaf3);border-radius:14px;padding:12px 16px;margin-bottom:12px;border:2px solid #5bc4e840;font-size:14px;color:#073d5c;font-weight:700;line-height:1.7">
+        💡 <b>Petunjuk:</b> Tuliskan masing-masing 4 hak dan 4 kewajiban kamu sebagai siswa di sekolah.<br>
+        <span style="color:#0e5c80">Hak = sesuatu yang <b>kamu terima/dapatkan</b> &nbsp;|&nbsp; Kewajiban = sesuatu yang <b>harus kamu lakukan</b></span>
+      </div>
       <div style="border-radius:18px;overflow:hidden;box-shadow:0 4px 18px rgba(45,138,82,.12);border:2.5px solid ${act.color}40">
         <div style="display:grid;grid-template-columns:1fr 1fr;background:${act.color}">
           ${['HAK SAYA','KEWAJIBAN SAYA'].map(h=>`<div style="padding:13px 14px;color:#fff;font-weight:800;font-size:14px;font-family:'Poppins',sans-serif;text-shadow:0 1px 4px rgba(0,0,0,.2)">${h}</div>`).join('')}
         </div>
-        ${act.hakKeys.map((hk,i)=>`
+        ${[
+          ['Hak mendapatkan pengajaran yang baik dari guru','Kewajiban datang tepat waktu ke sekolah'],
+          ['Hak mendapat perlakuan adil dari guru dan teman','Kewajiban mengerjakan tugas dan PR dengan jujur'],
+          ['Hak menggunakan fasilitas sekolah (buku, lapangan, dll)','Kewajiban menjaga kebersihan dan ketertiban sekolah'],
+          ['Hak menyampaikan pendapat saat diskusi di kelas','Kewajiban menghormati guru, staf, dan sesama teman'],
+        ].map((hints,i)=>`
           <div style="display:grid;grid-template-columns:1fr 1fr;background:${i%2===0?'#edfaf3':'#fff'}">
             <div style="padding:7px;border-right:2.5px solid ${act.color}20">
-              <input value="${esc(ans[hk]||'')}" placeholder="Hak ke-${i+1}..." oninput="saveAns('${act.id}','${hk}',this.value)"
+              <div style="font-size:11.5px;color:#5bc4e8;font-weight:700;padding:0 4px 3px;font-family:'Poppins',sans-serif">Hak ke-${i+1}: <span style="color:#6aaa82">${hints[0]}</span></div>
+              <input value="${esc(ans[act.hakKeys[i]]||'')}" placeholder="Tuliskan hakmu..." oninput="saveAns('${act.id}','${act.hakKeys[i]}',this.value)"
                 style="width:100%;border:2px solid ${act.color}35;border-radius:10px;padding:10px 12px;font-size:14px;outline:none;background:#fff;box-sizing:border-box;color:#0f2d1a;font-family:'Poppins',sans-serif;font-weight:700"/>
+              ${feedbackChip(act.id,act.hakKeys[i],ans[act.hakKeys[i]]||'')}
             </div>
             <div style="padding:7px">
-              <input value="${esc(ans[act.kwjbKeys[i]]||'')}" placeholder="Kewajiban ke-${i+1}..." oninput="saveAns('${act.id}','${act.kwjbKeys[i]}',this.value)"
+              <div style="font-size:11.5px;color:#e8913d;font-weight:700;padding:0 4px 3px;font-family:'Poppins',sans-serif">Kewajiban ke-${i+1}: <span style="color:#6aaa82">${hints[1]}</span></div>
+              <input value="${esc(ans[act.kwjbKeys[i]]||'')}" placeholder="Tuliskan kewajibanmu..." oninput="saveAns('${act.id}','${act.kwjbKeys[i]}',this.value)"
                 style="width:100%;border:2px solid ${act.color}35;border-radius:10px;padding:10px 12px;font-size:14px;outline:none;background:#fff;box-sizing:border-box;color:#0f2d1a;font-family:'Poppins',sans-serif;font-weight:700"/>
+              ${feedbackChip(act.id,act.kwjbKeys[i],ans[act.kwjbKeys[i]]||'')}
             </div>
           </div>`).join('')}
       </div>
+      ${nilaiBadge(act.id)}
     </div>`;
 }
 
@@ -691,6 +879,7 @@ function renderLkpdRulesMatching(act){
         <div style="margin-top:14px;background:${score===4?'#c8f0d8':'#fff3cc'};border-radius:16px;padding:15px 18px;font-weight:800;color:${score===4?'#0f3d1f':'#4a2d00'};font-size:15px;font-family:'Poppins',sans-serif;border:2.5px solid ${score===4?'#2d8a52':'#c97a00'}50">
           ${score===4?'🎉 Semua benar! Luar biasa!':score>=2?`👍 ${score}/4 benar. Hampir sempurna!`:`💪 ${score}/4 benar. Coba lagi ya!`}
         </div>`:''}
+      ${nilaiBadge(act.id)}
     </div>`;
 }
 
@@ -715,8 +904,10 @@ function renderLkpdScenario(act){
               onfocus="this.style.borderColor='${act.color}'"
               onblur="this.style.borderColor='${act.color}40'"
               style="width:100%;border:2.5px solid ${act.color}40;border-radius:14px;padding:12px 14px;font-size:14.5px;resize:vertical;outline:none;background:#f4fdf7;line-height:1.75;box-sizing:border-box;color:#0f2d1a;font-family:'Poppins',sans-serif;font-weight:700">${esc(ans[s.id]||'')}</textarea>
+            ${feedbackChip(act.id,s.id,ans[s.id]||'')}
           </div>
         </div>`).join('')}
+      ${nilaiBadge(act.id)}
     </div>`;
 }
 
@@ -773,8 +964,10 @@ function renderLkpdEvaluation(act){
               onfocus="this.style.borderColor='#c97a00'"
               onblur="this.style.borderColor='#c97a0050'"
               style="width:100%;border:2.5px solid #c97a0050;border-radius:14px;padding:12px 14px;font-size:14.5px;resize:vertical;outline:none;background:#fff;line-height:1.75;box-sizing:border-box;color:#0f2d1a;font-family:'Poppins',sans-serif;font-weight:700">${esc(ans[r.id]||'')}</textarea>
+            ${feedbackChip(act.id, r.id, ans[r.id]||'')}
           </div>`).join('')}
       </div>
+      ${nilaiBadge(act.id)}
     </div>`;
 }
 
@@ -819,8 +1012,8 @@ function renderHome(){
           Penulis: <span style="color:#f9c846;font-weight:800">Muhammad Fajar Wibowo</span>
         </p>
         <!-- stat strip -->
-        <div class="fade-up a4" style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:28px">
-          ${[['📖','5 Bab','Materi Lengkap','#d4f0e0','#2d8a52'],['✏️','5 Kegiatan','LKPD Interaktif','#dff4fc','#5bc4e8'],['🎯','4 Tujuan','Pembelajaran','#fff8dc','#e8913d']].map(([ic,v,l,bg,c])=>`
+        <div class="fade-up a4" style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:28px">
+          ${[['📖','5 Bab','Materi Lengkap','#d4f0e0','#2d8a52'],['✏️','5 Kegiatan','LKPD Interaktif','#dff4fc','#5bc4e8']].map(([ic,v,l,bg,c])=>`
             <div class="hover-lift" style="background:rgba(255,255,255,.12);border-radius:18px;padding:16px 8px;border:2px solid rgba(255,255,255,.18);backdrop-filter:blur(10px)">
               <div style="font-size:26px;margin-bottom:6px">${ic}</div>
               <div style="color:#fff;font-weight:800;font-size:16px;font-family:'Poppins',sans-serif">${v}</div>
@@ -829,11 +1022,11 @@ function renderHome(){
         </div>
         <!-- main buttons -->
         <div class="fade-up a5" style="display:flex;flex-direction:column;gap:12px;margin-bottom:20px">
-          <button class="btn-press hover-lift" onclick="goTo('cover')"
+          <button class="btn-press hover-lift" onclick="checkIdentityThenGo('cover')"
             style="background:linear-gradient(135deg,#f9c846,#e8913d);color:#1d3c2a;border:none;border-radius:18px;padding:18px;font-size:17px;font-weight:800;cursor:pointer;font-family:'Poppins',sans-serif;box-shadow:0 8px 30px rgba(249,200,70,.5);letter-spacing:.3px">
             📚 Mulai Belajar!
           </button>
-          <button class="btn-press" onclick="goTo('lkpd-home')"
+          <button class="btn-press" onclick="checkIdentityThenGo('lkpd-home')"
             style="background:rgba(255,255,255,.14);color:#fff;border:2px solid rgba(255,255,255,.3);border-radius:18px;padding:15px;font-size:15px;font-weight:800;cursor:pointer;font-family:'Poppins',sans-serif">
             ✏️ Langsung ke LKPD
           </button>
@@ -888,17 +1081,17 @@ function renderHome(){
             </div>
           </div>
           <!-- completion indicator -->
-          <div id="identity-status" style="margin-top:14px;padding:10px 14px;border-radius:12px;background:rgba(255,255,255,.08);font-size:14px;font-weight:700;color:rgba(255,255,255,.6);font-family:'Poppins',sans-serif;text-align:center"></div>
+          <div id="identity-status" style="margin-top:14px;padding:10px 14px;border-radius:12px;font-size:14px;font-weight:700;font-family:'Poppins',sans-serif;text-align:center"></div>
         </div>
         <!-- chapter quick nav -->
         <div class="fade-up a6">
-          <p style="color:rgba(255,255,255,.5);font-size:15px;margin-bottom:10px;font-weight:700;letter-spacing:1.5px">LANGSUNG KE SUB BAB</p>
+          <p style="color:rgba(255,255,255,.5);font-size:15px;margin-bottom:10px;font-weight:700;letter-spacing:1.5px">LANGSUNG KE SUB MATERI</p>
           <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px">
             ${CHAPTERS.map((ch,i)=>`
               <button class="btn-press" onclick="goTo('chapter',{chIdx:${i},pageIdx:0})"
                 style="background:rgba(255,255,255,.1);border:2px solid rgba(255,255,255,.18);border-radius:14px;padding:10px 4px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:4px">
                 <span style="font-size:20px">${ch.icon}</span>
-                <span style="color:rgba(255,255,255,.75);font-size:15px;font-weight:800;font-family:'Poppins',sans-serif">Sub Bab ${ch.id}</span>
+                <span style="color:rgba(255,255,255,.75);font-size:15px;font-weight:800;font-family:'Poppins',sans-serif">Sub Materi ${ch.id}</span>
               </button>`).join('')}
           </div>
         </div>
@@ -932,7 +1125,7 @@ function renderCover(){
             <p style="color:#f9c846;font-size:15px;font-weight:800;margin-bottom:12px;font-family:'Poppins',sans-serif">📌 Petunjuk Penggunaan</p>
             ${[
               ['1️⃣','Isi identitas siswa di halaman Beranda terlebih dahulu.'],
-              ['2️⃣','Baca materi tiap Sub Bab secara urut dari Sub Bab 1 sampai 5.'],
+              ['2️⃣','Baca materi tiap Sub Materi secara urut dari Sub Materi 1 sampai 5.'],
               ['3️⃣','Setelah membaca, kerjakan LKPD yang sesuai dengan materi.'],
               ['4️⃣','Klik "Cek Jawaban" untuk melihat hasil pada soal pilihan.'],
               ['5️⃣','Jawaban tersimpan otomatis, aman jika halaman ditutup.'],
@@ -940,32 +1133,6 @@ function renderCover(){
               <div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:9px">
                 <span style="font-size:18px;flex-shrink:0">${num}</span>
                 <span style="color:rgba(255,255,255,.9);font-size:14.5px;font-weight:600;line-height:1.65">${txt}</span>
-              </div>`).join('')}
-          </div>
-          <!-- Capaian Pembelajaran -->
-          <div style="background:rgba(92,199,100,.15);border:2px solid rgba(92,199,100,.4);border-radius:18px;padding:16px 18px;margin-bottom:16px;text-align:left">
-            <p style="color:#6fcf97;font-size:15px;font-weight:800;margin-bottom:12px;font-family:'Poppins',sans-serif">📗 CAPAIAN PEMBELAJARAN</p>
-            <p style="color:rgba(255,255,255,.75);font-size:14px;font-weight:600;margin-bottom:10px;line-height:1.65">Peserta didik mampu memahami dan menerapkan konsep interaksi sosial dalam kehidupan di lingkungan sekolah dan masyarakat sesuai nilai-nilai Pancasila.</p>
-            <div style="height:1.5px;background:rgba(111,207,151,.25);margin:10px 0"></div>
-            <p style="color:#6fcf97;font-size:14px;font-weight:800;margin-bottom:8px;font-family:'Poppins',sans-serif">🔑 Kata Kunci</p>
-            <div style="display:flex;flex-wrap:wrap;gap:6px">
-              ${['Interaksi Sosial','Kerja Sama','Gotong Royong','Norma','Musyawarah','Hak & Kewajiban','Toleransi'].map(k=>`
-                <span style="background:rgba(111,207,151,.2);border:1.5px solid rgba(111,207,151,.4);border-radius:20px;padding:5px 14px;font-size:14px;color:#fff;font-weight:700">${k}</span>`).join('')}
-            </div>
-          </div>
-          <!-- Tujuan Pembelajaran -->
-          <div style="background:linear-gradient(135deg,rgba(249,200,70,.18),rgba(232,145,61,.15));border-radius:18px;padding:16px;margin-bottom:16px;text-align:left;border:2px solid rgba(249,200,70,.35)">
-            <p style="color:#f9c846;font-size:15px;font-weight:800;letter-spacing:1.2px;margin-bottom:12px;font-family:'Poppins',sans-serif">🎯 TUJUAN PEMBELAJARAN</p>
-            <p style="color:rgba(255,255,255,.6);font-size:15px;font-weight:700;margin-bottom:10px;font-style:italic">Setelah mempelajari bab ini, peserta didik diharapkan mampu:</p>
-            ${[
-              ['🤝','Menjelaskan pengertian interaksi sosial serta syarat dan bentuk-bentuknya dalam kehidupan sehari-hari.'],
-              ['🏫','Mengidentifikasi peran, hak, dan kewajiban setiap warga sekolah dan masyarakat.'],
-              ['📋','Menyebutkan dan membedakan berbagai norma yang berlaku di lingkungan sekolah dan masyarakat.'],
-              ['✨','Menerapkan interaksi sosial yang positif melalui sikap gotong royong, toleransi, dan musyawarah.'],
-            ].map(([ic,txt],i)=>`
-              <div style="display:flex;gap:10px;align-items:flex-start;margin-bottom:${i<3?'9':'0'}px">
-                <div style="width:28px;height:28px;border-radius:9px;background:rgba(249,200,70,.25);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;border:1.5px solid rgba(249,200,70,.4)">${ic}</div>
-                <span style="color:rgba(255,255,255,.85);font-size:14px;line-height:1.65;font-weight:600;padding-top:4px">${txt}</span>
               </div>`).join('')}
           </div>
           <!-- Daftar Isi -->
@@ -976,7 +1143,7 @@ function renderCover(){
                 style="width:100%;background:transparent;border:none;display:flex;align-items:center;gap:10px;padding:8px 10px;cursor:pointer;border-radius:12px;margin-bottom:2px;transition:background .2s"
                 onmouseover="this.style.background='rgba(255,255,255,.08)'" onmouseout="this.style.background='transparent'">
                 <div style="width:30px;height:30px;border-radius:9px;background:${ch.color}60;display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0">${ch.icon}</div>
-                <span style="flex:1;color:rgba(255,255,255,.85);font-size:14.5px;font-weight:700;text-align:left">Sub Bab ${ch.id} – ${ch.title}</span>
+                <span style="flex:1;color:rgba(255,255,255,.85);font-size:14.5px;font-weight:700;text-align:left">Sub Materi ${ch.id} – ${ch.title}</span>
                 <span style="color:rgba(255,255,255,.35);font-size:14.5px">→</span>
               </button>`).join('')}
             <div style="height:2px;background:rgba(255,255,255,.08);margin:8px 0;border-radius:2px"></div>
@@ -994,7 +1161,7 @@ function renderCover(){
             <p style="color:#7dd3fc;font-size:15px;font-weight:800;margin-bottom:12px;font-family:'Poppins',sans-serif">📊 PANDUAN PENILAIAN</p>
             <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:12px">
               ${[
-                ['LKPD 1–4','Essay & Isian','Kebijaksanaan Guru','Dinilai berdasarkan kelengkapan dan kesesuaian jawaban'],
+                ['LKPD 1, 2, 4','Essay, Isian & Skenario','Otomatis (0–100)','Dihitung sistem dari panjang jawaban & kata kunci penting. Guru tetap memeriksa kesesuaiannya.'],
                 ['LKPD 3','Cocokkan Norma','4 soal × 25 = 100','Jawaban otomatis dicek oleh sistem'],
                 ['LKPD 5','Setuju/Tidak','8 soal × 12,5 = 100','Jawaban otomatis dicek oleh sistem'],
               ].map(([lkpd,tipe,skor,ket])=>`
@@ -1016,6 +1183,14 @@ function renderCover(){
                   </div>`).join('')}
               </div>
             </div>
+            <div style="background:rgba(255,255,255,.06);border-radius:12px;padding:11px 14px;border:1px solid rgba(255,255,255,.12);margin-top:10px">
+              <p style="color:#7dd3fc;font-size:14px;font-weight:800;margin-bottom:6px;font-family:'Poppins',sans-serif">💬 Arti Kotak Keterangan di Bawah Jawaban</p>
+              <p style="color:rgba(255,255,255,.7);font-size:13px;font-weight:600;line-height:1.7;margin:0">
+                ✅ Jawaban sudah memuat poin penting (nilai 100)<br>
+                🔶 Sudah diisi tapi belum ditemukan kata kunci penting (nilai 65, periksa lagi)<br>
+                ❌ Belum diisi / terlalu singkat (nilai 0)
+              </p>
+            </div>
           </div>
           <!-- Nav buttons -->
           <div style="display:flex;gap:10px">
@@ -1025,7 +1200,7 @@ function renderCover(){
             </button>
             <button class="btn-press" onclick="goTo('chapter',{chIdx:0,pageIdx:0})"
               style="flex:2;background:linear-gradient(135deg,#f9c846,#e8913d);color:#1d3c2a;border:none;border-radius:14px;padding:13px;cursor:pointer;font-weight:800;font-size:14px;font-family:'Poppins',sans-serif;box-shadow:0 4px 18px rgba(249,200,70,.45)">
-              🌱 Mulai Sub Bab 1 →
+              🌱 Mulai Sub Materi 1 →
             </button>
           </div>
         </div>
@@ -1043,7 +1218,7 @@ function renderChapter(){
   if(isLast){state.readSet.add(chIdx);lsSave();}
   const pct=Math.round(((chIdx*2+pageIdx+1)/(CHAPTERS.length*2))*100);
   const nextBg=isLast&&chIdx===CHAPTERS.length-1?'linear-gradient(135deg,#2d8a52,#1a5c35)':ch.color;
-  const nextLabel=isLast?(chIdx<CHAPTERS.length-1?`Sub Bab ${chIdx+2}: ${CHAPTERS[chIdx+1].icon} →`:'Kerjakan LKPD ✏️'):'Lanjut →';
+  const nextLabel=isLast?(chIdx<CHAPTERS.length-1?`Sub Materi ${chIdx+2}: ${CHAPTERS[chIdx+1].icon} →`:'Kerjakan LKPD ✏️'):'Lanjut →';
   return `
     <div style="height:100vh;display:flex;flex-direction:column;background:#f4fdf7">
       <!-- topbar -->
@@ -1051,7 +1226,7 @@ function renderChapter(){
         <button onclick="goTo('cover')" style="background:none;border:none;cursor:pointer;color:${ch.color};font-size:24px;padding:0 12px 0 4px;display:flex;align-items:center">←</button>
         <div style="flex:1;display:flex;flex-direction:column;justify-content:center;overflow:hidden">
           <div style="font-weight:800;color:#0f2d1a;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-family:'Poppins',sans-serif">
-            <span style="color:${ch.color}">Sub Bab ${ch.id}</span> · ${ch.title}
+            <span style="color:${ch.color}">Sub Materi ${ch.id}</span> · ${ch.title}
           </div>
           <div style="height:6px;background:#c8e6d4;border-radius:10px;margin-top:5px">
             <div style="height:100%;width:${pct}%;background:linear-gradient(to right,${ch.color},${ch.color}bb);border-radius:10px;transition:width .4s"></div>
@@ -1071,7 +1246,7 @@ function renderChapter(){
           <button class="btn-press" onclick="goTo('chapter',{chIdx:${i},pageIdx:0})"
             style="background:none;border:none;border-bottom:4px solid ${i===chIdx?c.color:'transparent'};padding:11px 10px 9px;cursor:pointer;display:flex;align-items:center;gap:5px;flex-shrink:0;transition:border-color .2s;margin-bottom:-3px">
             <span style="font-size:18px">${c.icon}</span>
-            <span style="font-size:14.5px;font-weight:800;color:${i===chIdx?c.color:'#1f4d30'};white-space:nowrap;font-family:'Poppins',sans-serif">Sub Bab ${c.id}</span>
+            <span style="font-size:14.5px;font-weight:800;color:${i===chIdx?c.color:'#1f4d30'};white-space:nowrap;font-family:'Poppins',sans-serif">Sub Materi ${c.id}</span>
             ${state.readSet.has(i)?`<span style="font-size:14.5px">✅</span>`:''}
           </button>`).join('')}
       </div>
@@ -1085,7 +1260,7 @@ function renderChapter(){
           <div style="display:flex;align-items:center;gap:14px;margin-bottom:12px">
             <div style="width:54px;height:54px;border-radius:18px;background:rgba(255,255,255,.25);display:flex;align-items:center;justify-content:center;font-size:30px;flex-shrink:0;border:2px solid rgba(255,255,255,.3)">${ch.icon}</div>
             <div>
-              <div style="font-size:15px;color:rgba(255,255,255,.8);font-weight:800;letter-spacing:1.5px;margin-bottom:4px;font-family:'Poppins',sans-serif">SUB BAB ${ch.id} · HALAMAN ${pageIdx+1}/${totalPages}</div>
+              <div style="font-size:15px;color:rgba(255,255,255,.8);font-weight:800;letter-spacing:1.5px;margin-bottom:4px;font-family:'Poppins',sans-serif">SUB MATERI ${ch.id} · HALAMAN ${pageIdx+1}/${totalPages}</div>
               <h2 style="font-family:'Poppins',sans-serif;font-size:21px;color:#fff;line-height:1.3;margin:0;text-shadow:0 2px 8px rgba(0,0,0,.2)">${page.title}</h2>
             </div>
           </div>
@@ -1180,6 +1355,8 @@ function renderLkpdHome(){
         <div style="display:flex;flex-direction:column;gap:14px">
           ${LKPD_ACTIVITIES.map((act,i)=>{
             const filled=Object.keys(state.lkpdAnswers[act.id]||{}).length>0;
+            const sc=calcScore(act.id);
+            const c=scoreColor(sc.pct);
             return `
             <button class="btn-press hover-lift" onclick="goTo('lkpd-activity',{idx:${i}})"
               style="background:#fff;border:2.5px solid ${filled?act.color+'70':'#c8e6d4'};border-radius:22px;padding:0;cursor:pointer;text-align:left;display:flex;overflow:hidden;box-shadow:0 4px 18px rgba(45,138,82,.1);font-family:'Poppins',sans-serif;width:100%">
@@ -1187,13 +1364,14 @@ function renderLkpdHome(){
                 <span style="font-size:32px;margin-bottom:6px">${act.icon}</span>
                 <span style="font-size:15px;color:${act.color};font-weight:800;font-family:'Poppins',sans-serif">${i+1}/${LKPD_ACTIVITIES.length}</span>
               </div>
-              <div style="flex:1;padding:18px 16px;text-align:left">
-                <div style="font-weight:800;color:#0f2d1a;font-size:16px;margin-bottom:5px;font-family:'Poppins',sans-serif">${act.title}</div>
-                <div style="color:#1f4d30;font-size:15px;margin-bottom:12px;font-weight:700;line-height:1.5">${act.desc}</div>
-                <div>
+              <div style="flex:1;padding:14px 16px;text-align:left">
+                <div style="font-weight:800;color:#0f2d1a;font-size:16px;margin-bottom:4px;font-family:'Poppins',sans-serif">${act.title}</div>
+                <div style="color:#1f4d30;font-size:15px;margin-bottom:10px;font-weight:700;line-height:1.5">${act.desc}</div>
+                <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
                   ${filled
-                    ?`<span style="background:#c8f0d8;color:#0f3d1f;border-radius:10px;padding:5px 13px;font-size:15px;font-weight:800;font-family:'Poppins',sans-serif;border:2px solid #2d8a5250">✅ Sudah dikerjakan</span>`
-                    :`<span style="background:${act.color}18;color:${act.color};border-radius:10px;padding:5px 13px;font-size:15px;font-weight:800;font-family:'Poppins',sans-serif;border:2px solid ${act.color}40">📝 Belum dikerjakan</span>`}
+                    ?`<span style="background:#c8f0d8;color:#0f3d1f;border-radius:10px;padding:4px 11px;font-size:14px;font-weight:800;border:2px solid #2d8a5250">✅ Selesai</span>
+                      <span id="home-score-${act.id}" style="background:${c}18;color:${c};border-radius:10px;padding:4px 11px;font-size:14px;font-weight:800;border:2px solid ${c}40">📊 Nilai: ${sc.pct}</span>`
+                    :`<span style="background:${act.color}18;color:${act.color};border-radius:10px;padding:4px 11px;font-size:14px;font-weight:800;border:2px solid ${act.color}40">📝 Belum dikerjakan</span>`}
                 </div>
               </div>
               <div style="display:flex;align-items:center;padding:0 18px;color:${act.color};font-size:28px;font-weight:800">›</div>
@@ -1277,9 +1455,9 @@ function renderLkpdActivityPage(){
               style="flex:2;padding:15px;border-radius:18px;border:none;background:${act.color};color:#fff;cursor:pointer;font-weight:800;font-size:14px;font-family:'Poppins',sans-serif;box-shadow:0 5px 18px ${act.color}55">
               Kegiatan ${idx+2} →
             </button>`:`
-            <button class="btn-press" onclick="goTo('finish')"
+            <button class="btn-press" onclick="konfirmasiSelesai()"
               style="flex:2;padding:15px;border-radius:18px;border:none;background:linear-gradient(135deg,#2d8a52,#1a5c35);color:#fff;cursor:pointer;font-weight:800;font-size:15px;font-family:'Poppins',sans-serif;box-shadow:0 5px 20px rgba(45,138,82,.55)">
-              🎉 Selesai!
+              🎉 Selesai & Kumpulkan!
             </button>`}
         </div>
       </div>
@@ -1302,8 +1480,9 @@ function renderFinish(){
       <div style="max-width:460px;width:100%;text-align:center;position:relative;z-index:1">
         <div class="bounce-anim" style="font-size:80px;margin-bottom:16px">${allDone?'🏆':'📝'}</div>
         <h1 class="fade-up a1" style="font-family:'Poppins',sans-serif;color:#fff;font-size:36px;margin-bottom:12px;text-shadow:0 3px 20px rgba(0,0,0,.3)">${allDone?'Selamat, Kamu Hebat!':'Hampir Selesai!'}</h1>
-        <p class="fade-up a2" style="color:rgba(255,255,255,.95);font-size:16px;margin-bottom:30px;font-weight:700;line-height:1.7">${allDone?'Kamu telah menyelesaikan seluruh kegiatan<br>Bahan Ajar dan LKPD IPAS Kelas IV! 🌿':'Yuk selesaikan semua kegiatan LKPD<br>sebelum mencetak hasilmu! 💪'}</p>
-        <div class="fade-up a3" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:28px">
+        <p class="fade-up a2" style="color:rgba(255,255,255,.95);font-size:16px;margin-bottom:16px;font-weight:700;line-height:1.7">${allDone?'Kamu telah menyelesaikan seluruh kegiatan<br>Bahan Ajar dan LKPD IPAS Kelas IV! 🌿':'Yuk selesaikan semua kegiatan LKPD<br>sebelum mencetak hasilmu! 💪'}</p>
+        ${(()=>{let t='';try{t=localStorage.getItem('ipas_submit_time')||'';}catch(e){}return t?`<div class="fade-up a2" style="background:rgba(249,200,70,.18);border:2px solid rgba(249,200,70,.4);border-radius:14px;padding:10px 18px;margin-bottom:18px;font-size:14px;font-weight:700;color:#f9c846">🕐 Dikumpulkan: ${t}</div>`:'';})()}
+        <div class="fade-up a3" style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:22px">
           <div style="background:rgba(255,255,255,.14);border-radius:22px;padding:22px 14px;border:2.5px solid rgba(255,255,255,.2)">
             ${progressRing(readPct,"#f9c846",68)}
             <div style="color:#fff;font-size:14px;font-weight:800;margin-top:12px;font-family:'Poppins',sans-serif">📖 Bab Dibaca</div>
@@ -1312,6 +1491,38 @@ function renderFinish(){
             ${progressRing(pct,"#6fcf97",68)}
             <div style="color:#fff;font-size:14px;font-weight:800;margin-top:12px;font-family:'Poppins',sans-serif">✅ LKPD Selesai</div>
           </div>
+        </div>
+        <!-- Nilai Per LKPD -->
+        <div class="fade-up a3" style="background:rgba(255,255,255,.1);border-radius:20px;padding:18px;margin-bottom:22px;border:2px solid rgba(255,255,255,.15);text-align:left">
+          <div style="color:#f9c846;font-size:15px;font-weight:800;margin-bottom:14px;font-family:'Poppins',sans-serif;text-align:center">📊 Rekap Nilai LKPD</div>
+          ${(()=>{
+            const scores=calcAllScores();
+            const rata=calcRataRata();
+            const rc=scoreColor(rata);
+            return scores.map((s,i)=>{
+              const a=LKPD_ACTIVITIES[i];
+              const c=scoreColor(s.pct);
+              return `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1.5px solid rgba(255,255,255,.1)">
+                <span style="font-size:18px;width:24px">${a.icon}</span>
+                <span style="flex:1;color:rgba(255,255,255,.85);font-size:14px;font-weight:700">${a.title}</span>
+                <div style="width:120px;height:8px;background:rgba(255,255,255,.15);border-radius:10px;overflow:hidden">
+                  <div style="height:100%;width:${s.pct}%;background:${c};border-radius:10px;transition:width .5s"></div>
+                </div>
+                <span style="width:38px;text-align:right;font-size:15px;font-weight:800;color:${c};font-family:'Poppins',sans-serif">${s.pct}</span>
+              </div>`;
+            }).join('')+`
+            <div style="display:flex;align-items:center;gap:10px;padding:12px 0 0">
+              <span style="font-size:18px;width:24px">🏆</span>
+              <span style="flex:1;color:#f9c846;font-size:15px;font-weight:800">Nilai Rata-rata</span>
+              <div style="width:120px;height:10px;background:rgba(255,255,255,.15);border-radius:10px;overflow:hidden">
+                <div style="height:100%;width:${rata}%;background:${rc};border-radius:10px"></div>
+              </div>
+              <span style="width:38px;text-align:right;font-size:18px;font-weight:800;color:#f9c846;font-family:'Poppins',sans-serif">${rata}</span>
+            </div>
+            <div style="text-align:center;margin-top:10px;background:${rc}30;border-radius:12px;padding:8px;border:1.5px solid ${rc}60">
+              <span style="color:#fff;font-size:14px;font-weight:800">${scoreLabel(rata)}</span>
+            </div>`;
+          })()}
         </div>
         <div class="fade-up a3" style="display:flex;justify-content:center;gap:10px;margin-bottom:28px">
           ${Array.from({length:5},(_,i)=>`<span style="font-size:${pct>=(i+1)*20?"34":"26"}px;opacity:${pct>=(i+1)*20?"1":".3"};transition:all .4s;text-shadow:${pct>=(i+1)*20?"0 3px 12px rgba(249,200,70,.7)":"none"}">⭐</span>`).join("")}
@@ -1376,9 +1587,45 @@ function render(){
   else html=renderHome();
   app.innerHTML=html;
   populateTopbarName();
+  setTimeout(checkIdentityStatus, 0);
 }
 
 // ── EVENT HANDLERS ──
+// [PERBAIKAN 4] Konfirmasi sebelum kumpulkan + catat waktu submit
+function konfirmasiSelesai(){
+  const unfilled=LKPD_ACTIVITIES.filter(a=>Object.keys(state.lkpdAnswers[a.id]||{}).length===0);
+  let msg='';
+  if(unfilled.length>0){
+    msg='⚠️ Ada '+unfilled.length+' kegiatan yang belum dikerjakan:\n'+unfilled.map(a=>'• '+a.title).join('\n')+'\n\nTetap ingin mengumpulkan?';
+  } else {
+    msg='✅ Semua kegiatan sudah diisi!\n\nKumpulkan sekarang? Waktu pengumpulan akan dicatat.';
+  }
+  if(confirm(msg)){
+    try{localStorage.setItem('ipas_submit_time', new Date().toLocaleString('id-ID'));}catch(e){}
+    goTo('finish');
+  }
+}
+
+function checkIdentityThenGo(page, params={}){
+  var nama='';var kelas='';
+  try{nama=localStorage.getItem('ipas_id_nama')||'';}catch(e){}
+  try{kelas=localStorage.getItem('ipas_id_kelas')||'';}catch(e){}
+  if(!nama.trim()||!kelas){
+    // Highlight identity card
+    var st=document.getElementById('identity-status');
+    if(st){
+      st.style.background='rgba(201,48,48,.25)';st.style.color='#ffaaaa';st.style.border='2px solid rgba(201,48,48,.5)';
+      st.textContent='❌ Wajib isi Nama Lengkap dan Kelas terlebih dahulu!';
+      st.scrollIntoView({behavior:'smooth',block:'center'});
+    }
+    // Shake the name input
+    var ni=document.getElementById('id-nama');
+    if(ni){ni.style.borderColor='#f26b6b';ni.style.boxShadow='0 0 0 4px rgba(242,107,107,.3)';setTimeout(()=>{ni.style.borderColor='rgba(255,255,255,.3)';ni.style.boxShadow='none';},1800);}
+    return;
+  }
+  goTo(page, params);
+}
+
 function toggleAccordion(bid,idx,scrollId){
   state.accordionOpen[bid]=state.accordionOpen[bid]===idx?-1:idx;
   const sc=scrollId?document.getElementById(scrollId):null;
@@ -1397,6 +1644,13 @@ function saveAns(actId,key,val){
   if(!state.lkpdAnswers[actId])state.lkpdAnswers[actId]={};
   state.lkpdAnswers[actId][key]=val;
   lsSave();
+  // Update nilai badge live without full re-render
+  const badge = document.getElementById('nilai-badge-'+actId);
+  if(badge){ const pct=calcScore(actId).pct; const c=scoreColor(pct); badge.outerHTML=nilaiBadgeEl(actId,pct,c); }
+  // Update chip feedback per soal
+  const fb = document.getElementById('fb-'+actId+'-'+key);
+  if(fb){ fb.outerHTML = feedbackChip(actId,key,val); }
+  updateLkpdHomeBadge(actId);
 }
 function setMatchingSel(actId,idx,letter){
   if(!state.matchingSel[actId])state.matchingSel[actId]={};
@@ -1454,6 +1708,20 @@ function chapterNav(dir){
 
 
 // ── POPULATE STUDENT NAME IN TOPBAR ──
+function checkIdentityStatus(){
+  var nama='';var kelas='';
+  try{nama=localStorage.getItem('ipas_id_nama')||'';}catch(e){}
+  try{kelas=localStorage.getItem('ipas_id_kelas')||'';}catch(e){}
+  var s=document.getElementById('identity-status');
+  if(!s)return;
+  if(nama.trim()&&kelas){
+    s.style.background='rgba(109,207,151,.25)';s.style.color='#a8f0c6';s.style.border='2px solid rgba(109,207,151,.4)';
+    s.textContent='✅ Identitas lengkap! Siap mulai belajar.';
+  } else {
+    s.style.background='rgba(249,200,70,.15)';s.style.color='#f9c846';s.style.border='2px solid rgba(249,200,70,.35)';
+    s.textContent='⚠️ Isi Nama Lengkap dan Kelas terlebih dahulu sebelum mulai!';
+  }
+}
 function populateTopbarName(){
   // Update topbar name chip
   const el = document.getElementById('topbar-name');
@@ -1500,9 +1768,9 @@ function checkBeforePrint(){
   if(unfilled.length===0){
     printPage();
   } else {
-    // Already shown warning in UI, just scroll to it and flash
-    const btn = document.querySelector('[onclick="checkBeforePrint()"]');
-    if(btn){ btn.style.transform='scale(.96)'; setTimeout(()=>btn.style.transform='',200); }
+    if(confirm('Masih ada ' + unfilled.length + ' kegiatan yang belum dikerjakan. Tetap cetak sekarang?')){
+      printPage();
+    }
   }
 }
 
@@ -1547,10 +1815,20 @@ function printPage(){
   // LKPD 2 - Table
   body += `<div style="margin-bottom:28px;page-break-inside:avoid">
     <h3 style="background:#5bc4e8;color:#fff;padding:10px 16px;border-radius:10px;font-size:15px;margin:0 0 14px">🏫 Kegiatan 2 – Peran dan Tanggung Jawabku</h3>
-    <table style="width:100%;border-collapse:collapse;font-size:14px;margin-bottom:12px">
+    <p style="font-weight:700;font-size:14px;color:#1a5c35;margin:0 0 8px">A. Tabel Peran Warga Sekolah:</p>
+    <table style="width:100%;border-collapse:collapse;font-size:14px;margin-bottom:16px">
       <tr style="background:#5bc4e8;color:#fff"><td style="padding:9px 12px;border:1.5px solid #c8e6d4;font-weight:700">Warga Sekolah</td><td style="padding:9px 12px;border:1.5px solid #c8e6d4;font-weight:700">Peran/Tugas</td><td style="padding:9px 12px;border:1.5px solid #c8e6d4;font-weight:700">Tanggung Jawab</td></tr>`;
   [['Siswa','siswa_peran','siswa_tanggung'],['Guru','guru_peran','guru_tanggung'],['Kepala Sekolah','kepsek_peran','kepsek_tanggung']].forEach(([r,k1,k2])=>{
     body += `<tr><td style="padding:9px 12px;border:1.5px solid #c8e6d4;font-weight:700;background:#edfaf3">${r}</td><td style="padding:9px 12px;border:1.5px solid #c8e6d4;font-size:14px">${(ans['L2']||{})[k1]||'–'}</td><td style="padding:9px 12px;border:1.5px solid #c8e6d4;font-size:14px">${(ans['L2']||{})[k2]||'–'}</td></tr>`;
+  });
+  body += `</table>
+    <p style="font-weight:700;font-size:14px;color:#1a5c35;margin:0 0 8px">B. Hak dan Kewajiban sebagai Siswa:</p>
+    <table style="width:100%;border-collapse:collapse;font-size:14px;margin-bottom:4px">
+      <tr style="background:#5bc4e8;color:#fff"><td style="padding:9px 12px;border:1.5px solid #c8e6d4;font-weight:700">Hak Saya</td><td style="padding:9px 12px;border:1.5px solid #c8e6d4;font-weight:700">Kewajiban Saya</td></tr>`;
+  const l2ans=ans['L2']||{};
+  ['hak1','hak2','hak3','hak4'].forEach((hk,i)=>{
+    const kwk=['kw1','kw2','kw3','kw4'][i];
+    body += `<tr style="background:${i%2===0?'#edfaf3':'#fff'}"><td style="padding:9px 12px;border:1.5px solid #c8e6d4;font-size:14px">${l2ans[hk]||'–'}</td><td style="padding:9px 12px;border:1.5px solid #c8e6d4;font-size:14px">${l2ans[kwk]||'–'}</td></tr>`;
   });
   body += `</table></div>`;
 
@@ -1611,6 +1889,48 @@ function printPage(){
   });
   body += `</div>`;
 
+  // ── REKAP NILAI ──
+  const allScores = LKPD_ACTIVITIES.map(a=>calcScore(a.id));
+  const totalW=LKPD_ACTIVITIES.reduce((s,a)=>s+(LKPD_WEIGHTS[a.id]||20),0);
+  const rataRata = Math.round(allScores.reduce((s,v,i)=>s+v.pct*(LKPD_WEIGHTS[LKPD_ACTIVITIES[i].id]||20),0)/totalW);
+  const predikat = rataRata>=90?'A – Sangat Baik':rataRata>=75?'B – Baik':rataRata>=60?'C – Cukup':'D – Perlu Bimbingan';
+  const nilaiColor = rataRata>=90?'#1a5c35':rataRata>=75?'#0e5c80':rataRata>=60?'#7a4e00':'#8b0000';
+  body += `<div style="margin-bottom:28px;page-break-inside:avoid;border:2.5px solid #2d8a52;border-radius:14px;overflow:hidden">
+    <div style="background:#1a5c35;padding:12px 18px">
+      <h3 style="color:#fff;font-size:16px;margin:0">📊 REKAP NILAI LKPD</h3>
+    </div>
+    <table style="width:100%;border-collapse:collapse;font-size:14px">
+      <tr style="background:#edfaf3">
+        <td style="padding:9px 14px;border:1.5px solid #c8e6d4;font-weight:700;width:40px">No</td>
+        <td style="padding:9px 14px;border:1.5px solid #c8e6d4;font-weight:700">Kegiatan LKPD</td>
+        <td style="padding:9px 14px;border:1.5px solid #c8e6d4;font-weight:700;text-align:center;width:55px">Bobot</td>
+        <td style="padding:9px 14px;border:1.5px solid #c8e6d4;font-weight:700;text-align:center;width:70px">Nilai</td>
+        <td style="padding:9px 14px;border:1.5px solid #c8e6d4;font-weight:700;text-align:center;width:120px">Predikat</td>
+      </tr>
+      ${LKPD_ACTIVITIES.map((a,i)=>{
+        const s=allScores[i];
+        const p=s.pct>=90?'A – Sangat Baik':s.pct>=75?'B – Baik':s.pct>=60?'C – Cukup':'D – Perlu Bimbingan';
+        const c=s.pct>=90?'#1a5c35':s.pct>=75?'#0e5c80':s.pct>=60?'#7a4e00':'#8b0000';
+        const w=LKPD_WEIGHTS[a.id]||20;
+        return `<tr style="background:${i%2===0?'#fff':'#f4fdf7'}">
+          <td style="padding:9px 14px;border:1.5px solid #c8e6d4;text-align:center;font-weight:700">${i+1}</td>
+          <td style="padding:9px 14px;border:1.5px solid #c8e6d4;font-weight:600">${a.icon} ${a.title}</td>
+          <td style="padding:9px 14px;border:1.5px solid #c8e6d4;text-align:center;color:#6aaa82;font-weight:700">${w}%</td>
+          <td style="padding:9px 14px;border:1.5px solid #c8e6d4;text-align:center;font-size:18px;font-weight:800;color:${c}">${s.pct}</td>
+          <td style="padding:9px 14px;border:1.5px solid #c8e6d4;text-align:center;font-weight:700;color:${c}">${p}</td>
+        </tr>`;
+      }).join('')}
+      <tr style="background:#1a5c35">
+        <td colspan="3" style="padding:12px 14px;color:#fff;font-weight:800;font-size:15px">🏆 NILAI AKHIR (Berbobot)</td>
+        <td style="padding:12px 14px;text-align:center;font-size:22px;font-weight:800;color:#f9c846">${rataRata}</td>
+        <td style="padding:12px 14px;text-align:center;font-weight:800;color:#f9c846;font-size:14px">${predikat}</td>
+      </tr>
+    </table>
+    <div style="padding:12px 18px;background:#edfaf3;font-size:13px;color:#2d8a52;font-weight:700">
+      Catatan: Skor essay/isian bertingkat (0/20/55/80/100) berdasarkan jumlah kata kunci · L5 = 70% benar/salah + 30% refleksi · Nilai akhir berbobot: L1=20%, L2=20%, L3=15%, L4=20%, L5=25%
+    </div>
+  </div>`;
+
   body += `<div style="text-align:center;margin-top:30px;padding-top:16px;border-top:2px solid #c8e6d4;color:#5e8872;font-size:14px">
     Bahan Ajar IPAS Kelas IV · Muhammad Fajar Wibowo · Dicetak: ${new Date().toLocaleDateString('id-ID',{day:'numeric',month:'long',year:'numeric'})}
   </div></div>`;
@@ -1624,6 +1944,15 @@ function printPage(){
 }
 lsLoad();
 render();
+// Hook input/change events untuk update status identitas secara real-time
+document.addEventListener('input', function(e){
+  if(e.target.id==='id-nama'||e.target.id==='id-kelas'||e.target.id==='id-tanggal'){
+    checkIdentityStatus();
+  }
+});
+document.addEventListener('change', function(e){
+  if(e.target.id==='id-kelas') checkIdentityStatus();
+});
 </script>
 </body>
 </html>
